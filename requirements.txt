@@ -1,0 +1,12 @@
+langgraph
+langchain
+langchain-google-genai
+langchain-community
+yfinance
+fredapi
+streamlit
+plotly
+sec-downloader
+python-dotenv
+pandas
+numpy
