@@ -270,51 +270,65 @@ def synthesis_agent(state: AdvancedSwarmState) -> dict:
     rate_data = state["rate_data"]
     dividend_data = state["dividend_data"]
 
-    # Load the institutional prompt
-    prompt_path = os.path.join(os.path.dirname(__file__), "..", "..", "docs", "institutional_synthesis_prompt.md")
-    with open(prompt_path, "r") as f:
-        institutional_prompt_template = f.read()
-
-    # Extract relevant data for prompt placeholders
-    ticker = market_data.get("ticker", "N/A")
+    # Build the institutional-grade prompt inline (no external file dependency)
+    ticker = market_data.get("ticker", state.get("ticker", "N/A"))
     issuer = market_data.get("name", "Unknown Issuer").replace("Preferred Stock", "").strip()
-    current_price = market_data.get("price", 0.0)
-    div_yield = market_data.get("dividend_yield", 0.0) * 100 if market_data.get("dividend_yield") is not None else 0.0
-    ten_yr_yield = rate_data.get("10Y", rate_data.get("20Y", 0.0))
-    spread_bps = (div_yield - ten_yr_yield) * 100 if ten_yr_yield else 0
-    fifty_two_week_high = market_data.get("fifty_two_week_high", 0.0)
-    fifty_two_week_low = market_data.get("fifty_two_week_low", 0.0)
-    
-    # Determine trading range for Security Overview
-    trading_range_desc = ""
-    if current_price > 0:
+    current_price = market_data.get("price", 0.0) or 0.0
+    raw_yield = market_data.get("dividend_yield") or 0.0
+    div_yield = raw_yield * 100 if raw_yield < 1 else raw_yield
+    ten_yr_yield = rate_data.get("10Y") or rate_data.get("20Y") or 0.0
+    spread_bps = int((div_yield - ten_yr_yield) * 100) if ten_yr_yield else 0
+    fifty_two_week_high = market_data.get("fifty_two_week_high") or 0.0
+    fifty_two_week_low = market_data.get("fifty_two_week_low") or 0.0
+
+    if current_price > 0 and fifty_two_week_high > 0:
         if current_price >= fifty_two_week_high * 0.95:
             trading_range_desc = "near its 52-week high"
-        elif current_price <= fifty_two_week_low * 1.05:
+        elif fifty_two_week_low > 0 and current_price <= fifty_two_week_low * 1.05:
             trading_range_desc = "near its 52-week low"
         else:
             trading_range_desc = "in its mid-range"
+    else:
+        trading_range_desc = "at an undetermined range"
 
-    # Fill in the prompt placeholders
-    formatted_prompt = institutional_prompt_template.format(
-        ticker=ticker,
-        issuer=issuer,
-        current_price=current_price,
-        div_yield=div_yield,
-        ten_yr_yield=ten_yr_yield,
-        spread_bps=int(spread_bps),
-        trading_range_desc=trading_range_desc,
-        dividend_frequency=dividend_data.get("frequency", "N/A"),
-        dividend_consistency=dividend_data.get("consistency", "N/A"),
-        trailing_annual_dividends=dividend_data.get("trailing_annual_dividends", 0.0),
-        market_data_json=json.dumps(market_data, indent=2),
-        rate_data_json=json.dumps(rate_data, indent=2),
-        dividend_data_json=json.dumps(dividend_data, indent=2),
+    system_prompt = (
+        "You are an expert financial analyst specializing in preferred equity securities. "
+        "Your task is to synthesize the provided market, rate, and dividend data for a given "
+        "preferred stock into a concise, professional research note suitable for an institutional investor. "
+        "Output must be in Markdown format with clear headings. "
+        "Do NOT include any raw JSON, base64 strings, or technical metadata in your output. "
+        "Do not use em dashes or sentence dashes. "
+        "The tone should be professional and objective."
     )
 
+    user_prompt = f"""Produce a professional preferred equity research note for {ticker} issued by {issuer}.
+
+Key pre-computed context:
+- Current Price: ${current_price:.2f} ({trading_range_desc})
+- Dividend Yield: {div_yield:.2f}%
+- 10-Year Treasury Yield: {ten_yr_yield:.2f}%
+- Spread over 10Y Treasury: {spread_bps} basis points
+- Dividend Frequency: {dividend_data.get('frequency', 'N/A')}
+- Dividend Consistency: {dividend_data.get('consistency', 'N/A')}
+- Trailing Annual Dividend: ${dividend_data.get('trailing_annual_dividends', 0.0):.4f}
+
+Full data for deeper analysis:
+MARKET DATA: {json.dumps(market_data, indent=2, default=str)}
+TREASURY YIELD CURVE: {json.dumps(rate_data, indent=2)}
+DIVIDEND ANALYSIS: {json.dumps(dividend_data, indent=2, default=str)}
+
+Structure your report with these sections:
+1. Executive Summary
+2. Security Overview
+3. Risk Analysis (Interest Rate Sensitivity, Credit Risk, Call Risk)
+4. Dividend Profile (Dividend Safety and Consistency, Yield Analysis)
+5. Conclusion and Key Considerations
+
+Replace all bracketed placeholders with actual calculated values. Do not output any JSON or raw data."""
+
     messages = [
-        SystemMessage(content="You are an expert financial analyst specializing in preferred equity securities. Your task is to synthesize the provided market, rate, and dividend data for a given preferred stock into a concise, professional research note suitable for an institutional investor. The analysis should be comprehensive, covering key aspects of preferred equity investment. Output must be in Markdown format, structured with clear headings and bullet points where appropriate. Avoid any raw JSON or technical details from the agent outputs. The tone should be professional and objective. Do not use em dashes or sentence dashes; rephrase sentences to avoid them."),
-        HumanMessage(content=formatted_prompt),
+        SystemMessage(content=system_prompt),
+        HumanMessage(content=user_prompt),
     ]
 
     response = llm.invoke(messages)
