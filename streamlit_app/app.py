@@ -26,7 +26,7 @@ from src.data.prospectus_inventory import (
 
 cached_inventory = load_cached_prospectus_inventory()
 inventory_lookup = get_inventory_lookup()
-quick_tickers = get_quick_analysis_tickers(limit=6)
+quick_tickers = get_quick_analysis_tickers(limit=8)
 
 
 # ---------------------------------------------------------------------------
@@ -137,7 +137,7 @@ with col2:
 
 # Quick-pick buttons
 st.caption("Quick picks:")
-quick_cols = st.columns(6)
+quick_cols = st.columns(max(len(quick_tickers), 1))
 for i, qt in enumerate(quick_tickers):
     with quick_cols[i]:
         if st.button(qt, use_container_width=True):

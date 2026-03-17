@@ -285,6 +285,11 @@ def prospectus_agent_node(state: dict) -> dict:
                 resolution=resolution,
             )
 
+    mismatch_message = _series_mismatch_message(terms)
+    if mismatch_message and not terms.get("error"):
+        terms["error"] = mismatch_message
+        terms["confidence_score"] = 0.0
+
     if terms.get("error"):
         error_updates.append(f"Prospectus Agent: {terms['error']}")
         status_updates["prospectus"] = "failed"
@@ -498,17 +503,33 @@ def _apply_resolution_metadata(
 
     resolution = resolution or {}
     validation = dict(finalized.get("validation", {}))
+    expected_series = _expected_series_for_ticker(
+        resolution.get("requested_ticker") or ticker or finalized.get("ticker", "")
+    )
+    extracted_series = finalized.get("series")
+    series_match = resolution.get("series_match")
+    if expected_series and extracted_series:
+        series_match = extracted_series.strip().lower() == expected_series.strip().lower()
+    elif series_match is None:
+        series_match = True
+    mismatch_warning = resolution.get("mismatch_warning")
+    if expected_series and extracted_series and not series_match and not mismatch_warning:
+        mismatch_warning = (
+            f"Resolved filing for {resolution.get('requested_ticker') or ticker or finalized.get('ticker')} "
+            f"did not clearly match {expected_series}."
+        )
+
     validation.update({
         "requested_ticker": resolution.get("requested_ticker") or ticker or finalized.get("ticker"),
         "matched_series": resolution.get("matched_series") or finalized.get("series"),
         "confidence_score": finalized.get("confidence_score"),
-        "series_match": resolution.get("series_match", True),
+        "series_match": series_match,
         "validation_tokens": resolution.get("validation_tokens", validation.get("validation_tokens", [])),
     })
 
     finalized["resolution_source"] = resolution.get("source", finalized.get("resolution_source", "live"))
     finalized["matched_series"] = resolution.get("matched_series") or finalized.get("series")
-    finalized["mismatch_warning"] = resolution.get("mismatch_warning")
+    finalized["mismatch_warning"] = mismatch_warning
     finalized["validation"] = validation
 
     if source_override:
@@ -567,6 +588,24 @@ def _has_minimum_terms(terms: Dict[str, Any]) -> bool:
             or terms.get("perpetual") is not None
         )
     )
+
+
+def _expected_series_for_ticker(ticker: str) -> Optional[str]:
+    """Resolve the expected SEC series label for a user-entered preferred ticker."""
+    if not ticker:
+        return None
+
+    from src.data.edgar_pipeline import _derive_series_hint
+
+    return _derive_series_hint(ticker)
+
+
+def _series_mismatch_message(terms: Dict[str, Any]) -> Optional[str]:
+    """Fail closed when the selected filing does not match the requested preferred."""
+    validation = terms.get("validation", {})
+    if validation.get("series_match", True):
+        return None
+    return terms.get("mismatch_warning") or "Resolved filing did not match the requested preferred series."
 
 
 def _should_call_llm(terms: Dict[str, Any]) -> bool:
