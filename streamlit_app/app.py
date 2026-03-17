@@ -17,6 +17,16 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 from src.agents.advanced_swarm import analyze_preferred_advanced
 from src.data.market_data import get_price_history
+from src.data.prospectus_inventory import (
+    get_inventory_lookup,
+    get_quick_analysis_tickers,
+    load_cached_prospectus_inventory,
+)
+
+
+cached_inventory = load_cached_prospectus_inventory()
+inventory_lookup = get_inventory_lookup()
+quick_tickers = get_quick_analysis_tickers(limit=6)
 
 
 # ---------------------------------------------------------------------------
@@ -80,6 +90,26 @@ with st.sidebar:
     """)
     
     st.markdown("---")
+    st.subheader("Quick Analysis")
+    st.write(
+        f"{len(cached_inventory)} cached prospectus profiles are available for fast analysis. "
+        "Any other preferred ticker can still be searched live."
+    )
+
+    if cached_inventory:
+        inventory_df = pd.DataFrame(
+            [
+                {
+                    "Ticker": row["ticker"],
+                    "Series": row["series"],
+                    "Cache": row["cache_label"],
+                }
+                for row in cached_inventory
+            ]
+        )
+        st.dataframe(inventory_df, use_container_width=True, hide_index=True)
+
+    st.markdown("---")
     st.caption("Phase 2: Vertical Slice Prototype")
 
 
@@ -98,7 +128,7 @@ with col1:
         "Preferred Stock Ticker",
         value="BAC-PL",
         placeholder="e.g., BAC-PL, JPM-PD, WFC-PL",
-        help="Enter a preferred stock ticker symbol. Use the format ISSUER-P[SERIES] (e.g., BAC-PL for Bank of America Series L)."
+        help="Enter a preferred stock ticker symbol. Use the format ISSUER-P[SERIES] (e.g., BAC-PL for Bank of America Series L). Cached tickers analyze faster; uncached tickers fall back to live SEC search and will join your local inventory after successful extraction."
     )
 
 with col2:
@@ -108,12 +138,23 @@ with col2:
 # Quick-pick buttons
 st.caption("Quick picks:")
 quick_cols = st.columns(6)
-quick_tickers = ["BAC-PL", "JPM-PD", "WFC-PL", "MS-PA", "GS-PD", "C-PJ"]
 for i, qt in enumerate(quick_tickers):
     with quick_cols[i]:
         if st.button(qt, use_container_width=True):
             ticker = qt
             analyze_button = True
+
+selected_inventory_entry = inventory_lookup.get(ticker.strip().upper())
+if selected_inventory_entry:
+    st.caption(
+        f"{ticker.strip().upper()} is available from {selected_inventory_entry['cache_label'].lower()} "
+        f"for quick analysis."
+    )
+else:
+    st.caption(
+        "This ticker is not cached yet. The app will search live SEC filings and add it to your local "
+        "inventory after a successful extraction."
+    )
 
 st.markdown("---")
 
@@ -473,3 +514,35 @@ if analyze_button and ticker:
 
 elif not ticker:
     st.info("Enter a preferred stock ticker above and click 'Analyze' to begin.")
+
+
+# ---------------------------------------------------------------------------
+# Cached Inventory
+# ---------------------------------------------------------------------------
+
+inventory_rows = load_cached_prospectus_inventory()
+
+st.subheader("Available for Quick Analysis")
+st.caption(
+    "These issues already have cached structured prospectus terms, so they load faster. "
+    "You can still enter any other preferred ticker above for live SEC search. "
+    "When a new issue is extracted successfully, it is added to your local runtime inventory."
+)
+
+if inventory_rows:
+    inventory_df = pd.DataFrame(
+        [
+            {
+                "Ticker": row["ticker"],
+                "Issuer": row["issuer"],
+                "Series": row["series"],
+                "Cache": row["cache_label"],
+                "Filing Date": row["filing_date"],
+                "Accession": row["accession_number"],
+            }
+            for row in inventory_rows
+        ]
+    )
+    st.dataframe(inventory_df, use_container_width=True, hide_index=True)
+else:
+    st.info("No cached prospectus inventory found yet.")
