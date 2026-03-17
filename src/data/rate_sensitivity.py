@@ -427,7 +427,14 @@ def _resolve_benchmark_context(
     benchmark: Optional[str],
     rate_data: Dict[str, Any],
 ) -> Dict[str, Any]:
-    """Resolve contractual vs live benchmark context for floating coupons."""
+    """Resolve contractual vs live benchmark context for floating coupons.
+
+    The function is tenor-aware: it extracts the tenor from the contractual
+    benchmark label (e.g. "3-month LIBOR" maps to "3M SOFR", "1-month LIBOR"
+    maps to "1M SOFR") so that the replacement label accurately reflects the
+    original reset frequency.  When SOFR is unavailable, the fallback chain
+    looks for the matching short Treasury tenor first.
+    """
     if not benchmark:
         return {
             "contractual_benchmark": None,
@@ -441,25 +448,26 @@ def _resolve_benchmark_context(
     label = str(benchmark).strip()
     normalized = label.lower()
     sofr = get_sofr_rate()
+    tenor_label = _extract_tenor_label(normalized)
 
     if "libor" in normalized:
         if sofr is not None:
             return {
                 "contractual_benchmark": label,
-                "live_benchmark_label": "3M SOFR",
+                "live_benchmark_label": f"{tenor_label} SOFR",
                 "benchmark_replacement_method": "SOFR proxy",
                 "benchmark_rate_pct": sofr,
                 "is_benchmark_replacement_estimate": True,
                 "benchmark_note": (
-                    "Legacy LIBOR-linked terms are modeled with a live SOFR proxy "
-                    "because LIBOR is no longer the operative market benchmark."
+                    f"Legacy LIBOR-linked terms ({label}) are modeled with a live "
+                    f"{tenor_label} SOFR proxy because LIBOR is no longer published."
                 ),
             }
         fallback = _first_available(rate_data, ["3M", "1M"])
         return {
             "contractual_benchmark": label,
-            "live_benchmark_label": "3M Treasury proxy",
-            "benchmark_replacement_method": "SOFR unavailable -> Treasury proxy fallback",
+            "live_benchmark_label": f"{tenor_label} Treasury proxy",
+            "benchmark_replacement_method": "SOFR unavailable, Treasury proxy fallback",
             "benchmark_rate_pct": fallback,
             "is_benchmark_replacement_estimate": True,
             "benchmark_note": (
@@ -469,10 +477,11 @@ def _resolve_benchmark_context(
         }
 
     if "sofr" in normalized:
+        sofr_label = label if label else f"{tenor_label} SOFR"
         if sofr is not None:
             return {
                 "contractual_benchmark": label,
-                "live_benchmark_label": label,
+                "live_benchmark_label": sofr_label,
                 "benchmark_replacement_method": "Contractual benchmark",
                 "benchmark_rate_pct": sofr,
                 "is_benchmark_replacement_estimate": False,
@@ -481,8 +490,8 @@ def _resolve_benchmark_context(
         fallback = _first_available(rate_data, ["3M", "1M"])
         return {
             "contractual_benchmark": label,
-            "live_benchmark_label": "SOFR proxy fallback",
-            "benchmark_replacement_method": "SOFR unavailable -> Treasury proxy fallback",
+            "live_benchmark_label": f"{tenor_label} SOFR proxy fallback",
+            "benchmark_replacement_method": "SOFR unavailable, Treasury proxy fallback",
             "benchmark_rate_pct": fallback,
             "is_benchmark_replacement_estimate": True,
             "benchmark_note": (
@@ -491,13 +500,17 @@ def _resolve_benchmark_context(
             ),
         }
 
+    # Unknown benchmark family (e.g. Prime, Fed Funds)
     return {
         "contractual_benchmark": label,
         "live_benchmark_label": label,
-        "benchmark_replacement_method": "Contractual benchmark",
+        "benchmark_replacement_method": "Contractual benchmark (no live rate mapped)",
         "benchmark_rate_pct": None,
         "is_benchmark_replacement_estimate": False,
-        "benchmark_note": None,
+        "benchmark_note": (
+            f"The contractual benchmark ({label}) is not in a recognized family "
+            "(LIBOR, SOFR), so no live rate substitution was applied."
+        ),
     }
 
 
@@ -625,6 +638,27 @@ def _parse_fraction(text: str) -> tuple[Optional[int], Optional[int]]:
     if not match:
         return None, None
     return int(match.group(1)), int(match.group(2))
+
+
+def _extract_tenor_label(normalized_benchmark: str) -> str:
+    """Extract a short tenor label (e.g. '3M', '1M', '6M') from a benchmark string.
+
+    Examples:
+        '3-month libor'  -> '3M'
+        '1 month sofr'   -> '1M'
+        '6m libor'       -> '6M'
+        'libor'          -> '3M'  (default assumption)
+    """
+    import re
+
+    match = re.search(r"(\d+)\s*[-\s]?(?:month|mo|m)\b", normalized_benchmark)
+    if match:
+        months = int(match.group(1))
+        return f"{months}M"
+
+    # Default to 3M when no tenor is specified, as 3-month was the most common
+    # LIBOR and SOFR reset frequency for preferred securities.
+    return "3M"
 
 
 def _first_available(rate_data: Dict[str, Any], keys: List[str]) -> Optional[float]:

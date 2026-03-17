@@ -6,7 +6,7 @@
   "par_value": 25000.0,
   "coupon_rate": 4.0,
   "coupon_type": "floating",
-  "floating_benchmark": "LIBOR",
+  "floating_benchmark": "3-month LIBOR",
   "floating_spread": 67.0,
   "fixed_to_floating_date": null,
   "dividend_frequency": "quarterly",
