@@ -87,6 +87,7 @@ class EdgarPipeline:
     def search_preferred_prospectuses(
         self,
         issuer: str = "",
+        series_hint: str = "",
         date_start: str = "2015-01-01",
         date_end: str = "2026-12-31",
         max_results: int = 50,
@@ -110,9 +111,13 @@ class EdgarPipeline:
             issuer_name, issuer_cik, tickers, form_type, filing_date, url.
         """
         # Build the search query
-        query = '"preferred stock" "depositary shares"'
+        query_parts = ['"preferred stock"', '"depositary shares"']
         if issuer:
-            query = f'"{issuer}" {query}'
+            query_parts.insert(0, f'"{issuer}"')
+        if series_hint:
+            query_parts.append(f'"{series_hint}"')
+
+        query = " ".join(query_parts)
 
         params = {
             "q": query,
@@ -520,6 +525,8 @@ def fetch_preferred_prospectus(ticker: str) -> Tuple[List[Dict], str]:
 
     # Extract parent company name for search
     parent_ticker = ticker.split("-")[0].upper()
+    requested_ticker = ticker.upper()
+    requested_series = _derive_series_hint(ticker)
 
     # Map common tickers to company names for better search results
     ticker_to_name = {
@@ -548,10 +555,21 @@ def fetch_preferred_prospectus(ticker: str) -> Tuple[List[Dict], str]:
 
     issuer_name = ticker_to_name.get(parent_ticker, parent_ticker)
 
-    # Search for preferred prospectuses
+    # Search for preferred prospectuses. Try a series-specific search first, then
+    # fall back to a broader issuer-level search if needed.
     filings = pipeline.search_preferred_prospectuses(
-        issuer=issuer_name, max_results=20
+        issuer=issuer_name,
+        series_hint=requested_series,
+        date_start="2000-01-01",
+        max_results=20,
     )
+
+    if not filings:
+        filings = pipeline.search_preferred_prospectuses(
+            issuer=issuer_name,
+            date_start="2000-01-01",
+            max_results=20,
+        )
 
     if not filings:
         # Fallback to submissions API
@@ -560,11 +578,85 @@ def fetch_preferred_prospectus(ticker: str) -> Tuple[List[Dict], str]:
     if not filings:
         return [], ""
 
-    # Download the highest-scoring filing
-    best_filing = filings[0]
+    # Score and select the best filing for the requested preferred series before
+    # downloading the full text for extraction.
+    best_filing = _select_best_filing(filings, requested_ticker, requested_series, pipeline)
     text = pipeline.download_filing(best_filing)
 
     return filings, text
+
+
+def _derive_series_hint(ticker: str) -> str:
+    """
+    Convert preferred ticker syntax into a likely SEC series label.
+
+    Examples:
+    - JPM-PD -> Series D
+    - BAC-PL -> Series L
+    - C-PJ   -> Series J
+    """
+    if "-" not in ticker:
+        return ""
+
+    series_part = ticker.split("-", 1)[1].upper()
+    if series_part.startswith("P") and len(series_part) > 1:
+        series_part = series_part[1:]
+
+    return f"Series {series_part}" if series_part else ""
+
+
+def _select_best_filing(
+    filings: List[Dict[str, Any]],
+    requested_ticker: str,
+    requested_series: str,
+    pipeline: EdgarPipeline,
+    max_candidates: int = 5,
+) -> Dict[str, Any]:
+    """
+    Pick the filing that best matches the requested preferred ticker.
+
+    For legacy preferreds, issuer-level EDGAR searches can return newer preferred
+    series first. This heuristic looks at ticker metadata plus a quick text scan
+    of the top candidate filings and prefers the one whose series appears to
+    match the requested security.
+    """
+    if not filings:
+        return {}
+
+    ticker_token = requested_ticker.lower()
+    ticker_token_spaced = requested_ticker.lower().replace("-", " ")
+    series_token = requested_series.lower()
+
+    best_filing = filings[0]
+    best_score = float("-inf")
+
+    for filing in filings[:max_candidates]:
+        score = 0
+
+        filing_tickers = [t.upper() for t in filing.get("tickers", [])]
+        if requested_ticker in filing_tickers:
+            score += 3
+
+        metadata_blob = " ".join(
+            str(filing.get(key, "")) for key in ("issuer_name", "description", "filename", "url")
+        ).lower()
+        if series_token and series_token in metadata_blob:
+            score += 4
+        if ticker_token in metadata_blob or ticker_token_spaced in metadata_blob:
+            score += 2
+
+        preview_text = pipeline.download_filing(filing, max_chars=12000)
+        preview_blob = preview_text.lower() if preview_text else ""
+        if series_token and series_token in preview_blob:
+            score += 6
+        if ticker_token in preview_blob or ticker_token_spaced in preview_blob:
+            score += 3
+
+        if score > best_score:
+            best_score = score
+            best_filing = filing
+
+    return best_filing
 
 
 # ---------------------------------------------------------------------------
