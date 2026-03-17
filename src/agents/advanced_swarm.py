@@ -4,7 +4,8 @@ Advanced Preferred Equity Swarm
 Demonstrates three key LangGraph patterns beyond the hello world version:
 
 1. PARALLEL FAN-OUT / FAN-IN:
-   Four data agents run simultaneously, then converge at a single point.
+   Four data agents run simultaneously, then feed a deterministic
+   interest-rate sensitivity agent before converging at a single point.
 
 2. CONDITIONAL ROUTING:
    A quality-check agent inspects the collected data and routes to either
@@ -119,6 +120,7 @@ class AdvancedSwarmState(TypedDict):
     ticker: str
     market_data: dict
     rate_data: dict
+    rate_sensitivity: dict
     dividend_data: dict
     prospectus_terms: dict
     quality_report: dict
@@ -235,7 +237,42 @@ def prospectus_agent(state: AdvancedSwarmState) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# Agent 5: Quality Check Agent (Conditional Router)
+# Agent 5: Interest Rate Sensitivity Agent (Deterministic)
+# ---------------------------------------------------------------------------
+
+def interest_rate_agent(state: AdvancedSwarmState) -> dict:
+    """
+    Build a security-specific rate sensitivity profile using market data,
+    Treasury context, dividend behavior, and prospectus coupon structure.
+    """
+    from src.data.rate_sensitivity import analyze_interest_rate_sensitivity
+
+    ticker = state["ticker"]
+    print(f"  [Interest Rate Agent] Building dynamic rate sensitivity view for {ticker}...")
+
+    analysis = analyze_interest_rate_sensitivity(
+        market_data=state.get("market_data", {}),
+        rate_data=state.get("rate_data", {}),
+        prospectus_terms=state.get("prospectus_terms", {}),
+        dividend_data=state.get("dividend_data", {}),
+    )
+
+    status = state.get("agent_status", {})
+    if analysis.get("error"):
+        status["interest_rate"] = "failed"
+        errors = state.get("errors", [])
+        errors.append(f"Interest Rate Agent: {analysis['error']}")
+        print(f"  [Interest Rate Agent] FAILED: {analysis['error']}")
+        return {"rate_sensitivity": analysis, "agent_status": status, "errors": errors}
+
+    status["interest_rate"] = "success"
+    summary = analysis.get("summary", analysis.get("regime", "rate analysis"))
+    print(f"  [Interest Rate Agent] SUCCESS. {summary}")
+    return {"rate_sensitivity": analysis, "agent_status": status}
+
+
+# ---------------------------------------------------------------------------
+# Agent 6: Quality Check Agent (Conditional Router)
 # ---------------------------------------------------------------------------
 
 def quality_check_agent(state: AdvancedSwarmState) -> dict:
@@ -252,6 +289,7 @@ def quality_check_agent(state: AdvancedSwarmState) -> dict:
     agent_status = state.get("agent_status", {})
     market_data = state.get("market_data", {})
     rate_data = state.get("rate_data", {})
+    rate_sensitivity = state.get("rate_sensitivity", {})
     dividend_data = state.get("dividend_data", {})
     prospectus_terms = state.get("prospectus_terms", {})
 
@@ -272,10 +310,12 @@ def quality_check_agent(state: AdvancedSwarmState) -> dict:
     # Rate data checks
     has_rates = len(rate_data) >= 3
     has_long_rate = "10Y" in rate_data or "20Y" in rate_data
+    has_rate_profile = rate_sensitivity.get("regime") is not None and not rate_sensitivity.get("error")
     checks["rate_data"] = {
         "has_sufficient_points": has_rates,
         "has_long_rate": has_long_rate,
-        "score": sum([has_rates, has_long_rate]) / 2
+        "has_sensitivity_profile": has_rate_profile,
+        "score": sum([has_rates, has_long_rate, has_rate_profile]) / 3
     }
     
     # Dividend data checks
@@ -347,7 +387,7 @@ def route_after_quality_check(state: AdvancedSwarmState) -> Literal["synthesis_a
 
 
 # ---------------------------------------------------------------------------
-# Agent 6: Synthesis Agent (Reasoning Agent)
+# Agent 7: Synthesis Agent (Reasoning Agent)
 # ---------------------------------------------------------------------------
 
 def synthesis_agent(state: AdvancedSwarmState) -> dict:
@@ -362,6 +402,7 @@ def synthesis_agent(state: AdvancedSwarmState) -> dict:
 
     market_data = state["market_data"]
     rate_data = state["rate_data"]
+    rate_sensitivity = state.get("rate_sensitivity", {})
     dividend_data = state["dividend_data"]
     prospectus_terms = state.get("prospectus_terms", {})
 
@@ -451,10 +492,15 @@ Key pre-computed context:
 - Depositary Share Structure: {prospectus_terms.get('deposit_fraction', 'N/A') if prospectus_terms.get('deposit_shares') else 'No depositary share structure flagged'}
 - Per-depositary-share comparison anchor ({anchor_label}): {comparison_anchor_text}
 - Premium / discount to comparison anchor: {premium_to_anchor_text}
+- Rate Regime: {rate_sensitivity.get('regime', 'N/A')}
+- Rate Summary: {rate_sensitivity.get('summary', 'N/A')}
+- Effective Duration: {rate_sensitivity.get('effective_duration', 'N/A')}
+- Effective DV01 / share: {rate_sensitivity.get('effective_dv01_per_share', 'N/A')}
 
 Full data for deeper analysis:
 MARKET DATA: {json.dumps(market_data, indent=2, default=str)}
 TREASURY YIELD CURVE: {json.dumps(rate_data, indent=2)}
+RATE SENSITIVITY: {json.dumps(rate_sensitivity, indent=2, default=str)}
 DIVIDEND ANALYSIS: {json.dumps(dividend_data, indent=2, default=str)}
 PROSPECTUS TERMS: {json.dumps(prospectus_terms, indent=2, default=str)}
 
@@ -506,7 +552,7 @@ Do not output any JSON or raw data."""
 
 
 # ---------------------------------------------------------------------------
-# Agent 7: Error Report Agent (Fallback)
+# Agent 8: Error Report Agent (Fallback)
 # ---------------------------------------------------------------------------
 
 def error_report_agent(state: AdvancedSwarmState) -> dict:
@@ -561,7 +607,8 @@ def build_advanced_graph() -> StateGraph:
     1. PARALLEL FAN-OUT: Four agents start from the same entry point
        and run concurrently (market_data, rate_context, dividend, prospectus)
 
-    2. FAN-IN: All four converge at quality_check_agent
+    2. FAN-IN: The four data agents feed interest_rate_agent, which then
+       feeds quality_check_agent
 
     3. CONDITIONAL EDGE: quality_check routes to either synthesis or error_report
     """
@@ -572,6 +619,7 @@ def build_advanced_graph() -> StateGraph:
     workflow.add_node("rate_context_agent", rate_context_agent)
     workflow.add_node("dividend_agent", dividend_agent)
     workflow.add_node("prospectus_agent", prospectus_agent)
+    workflow.add_node("interest_rate_agent", interest_rate_agent)
     workflow.add_node("quality_check_agent", quality_check_agent)
     workflow.add_node("synthesis_agent", synthesis_agent)
     workflow.add_node("error_report_agent", error_report_agent)
@@ -584,11 +632,13 @@ def build_advanced_graph() -> StateGraph:
     workflow.add_edge(START, "prospectus_agent")
 
     # PATTERN 2: Fan-In
-    # All four data agents converge at the quality check
-    workflow.add_edge("market_data_agent", "quality_check_agent")
-    workflow.add_edge("rate_context_agent", "quality_check_agent")
-    workflow.add_edge("dividend_agent", "quality_check_agent")
-    workflow.add_edge("prospectus_agent", "quality_check_agent")
+    # The four data agents converge into the interest-rate sensitivity layer,
+    # which then feeds the quality check.
+    workflow.add_edge("market_data_agent", "interest_rate_agent")
+    workflow.add_edge("rate_context_agent", "interest_rate_agent")
+    workflow.add_edge("dividend_agent", "interest_rate_agent")
+    workflow.add_edge("prospectus_agent", "interest_rate_agent")
+    workflow.add_edge("interest_rate_agent", "quality_check_agent")
 
     # PATTERN 3: Conditional Routing
     # Quality check decides which agent runs next
@@ -628,6 +678,7 @@ def analyze_preferred_advanced(ticker: str) -> dict:
         "ticker": ticker,
         "market_data": {},
         "rate_data": {},
+        "rate_sensitivity": {},
         "dividend_data": {},
         "prospectus_terms": {},
         "quality_report": {},
@@ -639,7 +690,7 @@ def analyze_preferred_advanced(ticker: str) -> dict:
     print(f"\n{'='*60}")
     print(f"  ADVANCED PREFERRED EQUITY SWARM: Analyzing {ticker}")
     print(f"{'='*60}")
-    print(f"  Agents: Market Data | Rate Context | Dividend Analysis | Prospectus")
+    print(f"  Agents: Market Data | Rate Context | Dividend Analysis | Prospectus | Interest Rate Sensitivity")
     print(f"  Quality Gate: Enabled")
     print(f"  Conditional Routing: Synthesis or Error Report")
     print(f"{'='*60}\n")

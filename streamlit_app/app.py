@@ -69,23 +69,26 @@ with st.sidebar:
     2. Rate Context Agent
     3. Dividend Analysis Agent
     4. Prospectus Parsing Agent
-    
+
+    **Deterministic Analysis:**
+    5. Interest Rate Sensitivity Agent
+
     **Quality Gate:**
-    5. Quality Check Agent
-    
+    6. Quality Check Agent
+
     **Conditional Routing:**
-    6a. Synthesis Agent (Gemini) *or*
-    6b. Error Report Agent
+    7a. Synthesis Agent (Gemini) *or*
+    7b. Error Report Agent
     """)
     
     st.markdown("---")
     
     st.subheader("LangGraph Patterns")
     st.markdown("""
-    **Fan-Out:** 4 agents run in parallel from START
-    
-    **Fan-In:** All converge at Quality Check
-    
+    **Fan-Out:** 4 data agents run in parallel from START
+
+    **Fan-In:** Results feed the Interest Rate Sensitivity Agent, then Quality Check
+
     **Conditional Edge:** Routes to Synthesis or Error based on data quality score
     """)
     
@@ -176,8 +179,8 @@ if analyze_button and ticker:
         
         # Run the swarm
         try:
-            status_placeholder.info("Running 4 data agents in parallel...")
-            progress_bar.progress(10, text="Data agents running in parallel...")
+            status_placeholder.info("Running 4 data agents in parallel, then dynamic rate sensitivity...")
+            progress_bar.progress(10, text="Data agents running in parallel, then dynamic rate sensitivity...")
             
             result = analyze_preferred_advanced(ticker)
             
@@ -212,13 +215,14 @@ if analyze_button and ticker:
     quality_report = result.get("quality_report", {})
     prospectus_terms = result.get("prospectus_terms", {})
     
-    status_cols = st.columns(6)
+    status_cols = st.columns(7)
     
     agent_labels = [
         ("market_data", "Market Data"),
         ("rate_context", "Rate Context"),
         ("dividend", "Dividend Analysis"),
         ("prospectus", "Prospectus"),
+        ("interest_rate", "Rate Sensitivity"),
     ]
     
     for i, (key, label) in enumerate(agent_labels):
@@ -231,7 +235,7 @@ if analyze_button and ticker:
             else:
                 st.metric(label, "?", delta="unknown", delta_color="off")
     
-    with status_cols[4]:
+    with status_cols[5]:
         qscore = quality_report.get("overall_score", 0)
         passed = quality_report.get("passed", False)
         st.metric(
@@ -241,7 +245,7 @@ if analyze_button and ticker:
             delta_color="normal" if passed else "inverse"
         )
     
-    with status_cols[5]:
+    with status_cols[6]:
         route = quality_report.get("decision", "unknown")
         if route == "proceed_to_synthesis":
             st.metric("Route Taken", "Synthesis", delta="AI analysis", delta_color="normal")
@@ -256,6 +260,7 @@ if analyze_button and ticker:
     
     market_data = result.get("market_data", {})
     rate_data = result.get("rate_data", {})
+    rate_sensitivity = result.get("rate_sensitivity", {})
     dividend_data = result.get("dividend_data", {})
     
     st.subheader("Key Metrics")
@@ -293,6 +298,73 @@ if analyze_button and ticker:
         st.metric("Dividend Pattern", f"{frequency.title()}", delta=consistency, delta_color="normal" if consistency in ("excellent", "good") else "off")
     
     st.markdown("---")
+
+    # ---------------------------------------------------------------------------
+    # Interest Rate Sensitivity
+    # ---------------------------------------------------------------------------
+
+    if rate_sensitivity and not rate_sensitivity.get("error"):
+        st.subheader("Interest Rate Sensitivity")
+
+        rate_cols = st.columns(5)
+
+        with rate_cols[0]:
+            regime = str(rate_sensitivity.get("regime", "N/A")).replace("_", " ").title()
+            st.metric("Rate Regime", regime)
+
+        with rate_cols[1]:
+            primary_measure = rate_sensitivity.get("primary_measure", "Primary Measure")
+            primary_value = rate_sensitivity.get("primary_value")
+            if isinstance(primary_value, (int, float)):
+                if "Duration" in primary_measure or "Reset" in primary_measure:
+                    primary_text = f"{primary_value:.2f} yrs"
+                else:
+                    primary_text = f"{primary_value:.2f}"
+            else:
+                primary_text = str(primary_value or "N/A")
+            st.metric(primary_measure, primary_text)
+
+        with rate_cols[2]:
+            duration = rate_sensitivity.get("effective_duration")
+            st.metric(
+                "Effective Duration",
+                f"{duration:.2f} yrs" if isinstance(duration, (int, float)) else "N/A",
+            )
+
+        with rate_cols[3]:
+            dv01 = rate_sensitivity.get("effective_dv01_per_share")
+            st.metric(
+                "DV01 / Share",
+                f"${dv01:.4f}" if isinstance(dv01, (int, float)) else "N/A",
+            )
+
+        with rate_cols[4]:
+            st.metric("Confidence", str(rate_sensitivity.get("confidence", "N/A")).title())
+
+        if rate_sensitivity.get("summary"):
+            st.caption(rate_sensitivity["summary"])
+        if rate_sensitivity.get("methodology"):
+            st.caption(rate_sensitivity["methodology"])
+
+        scenario_table = rate_sensitivity.get("scenario_table", [])
+        if scenario_table:
+            scenario_df = pd.DataFrame(
+                [
+                    {
+                        "Shock (bps)": row["shock_bps"],
+                        "Estimated Price Change": row["estimated_price_change"],
+                        "Estimated Price": row["estimated_price"],
+                    }
+                    for row in scenario_table
+                ]
+            )
+            st.dataframe(scenario_df, use_container_width=True, hide_index=True)
+
+        st.markdown("---")
+    elif rate_sensitivity.get("error"):
+        st.subheader("Interest Rate Sensitivity")
+        st.warning(rate_sensitivity["error"])
+        st.markdown("---")
     
     # ---------------------------------------------------------------------------
     # Charts Row
@@ -499,17 +571,19 @@ if analyze_button and ticker:
     # ---------------------------------------------------------------------------
     
     with st.expander("View Raw Agent Outputs"):
-        raw_tabs = st.tabs(["Market Data", "Rate Data", "Dividend Data", "Prospectus Terms", "Agent Status"])
+        raw_tabs = st.tabs(["Market Data", "Rate Data", "Rate Sensitivity", "Dividend Data", "Prospectus Terms", "Agent Status"])
         
         with raw_tabs[0]:
             st.json(market_data)
         with raw_tabs[1]:
             st.json(rate_data)
         with raw_tabs[2]:
-            st.json(dividend_data)
+            st.json(rate_sensitivity)
         with raw_tabs[3]:
-            st.json(prospectus_terms)
+            st.json(dividend_data)
         with raw_tabs[4]:
+            st.json(prospectus_terms)
+        with raw_tabs[5]:
             st.json(agent_status)
 
 elif not ticker:
