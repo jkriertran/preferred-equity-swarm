@@ -364,11 +364,20 @@ if analyze_button and ticker:
         series = prospectus_terms.get("series", "N/A")
         filing_url = prospectus_terms.get("filing_url")
         filing_date = prospectus_terms.get("filing_date", "N/A")
+        accession_number = prospectus_terms.get("accession_number", "N/A")
+        source_label = str(prospectus_terms.get("source", "live")).replace("_", " ").title()
+        resolution_label = str(prospectus_terms.get("resolution_source", "live")).replace("_", " ").title()
+        mismatch_warning = prospectus_terms.get("mismatch_warning")
 
         st.markdown(f"**{security_name}**")
-        st.caption(f"Series: {series} | Filing date: {filing_date}")
+        st.caption(
+            f"Series: {series} | Filing date: {filing_date} | Accession: {accession_number}"
+        )
+        st.caption(f"Prospectus source: {source_label} | Resolution: {resolution_label}")
         if filing_url:
             st.markdown(f"[Open filing on SEC.gov]({filing_url})")
+        if mismatch_warning:
+            st.warning(mismatch_warning)
 
         prospectus_cols = st.columns(5)
 

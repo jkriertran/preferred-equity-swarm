@@ -66,8 +66,34 @@ ARCHIVES_BASE = "https://www.sec.gov/Archives/edgar/data"
 PREFERRED_FORM_TYPES = {"424B2", "424B5", "424B3", "424B4"}
 SHELF_FORM_TYPES = {"S-3", "S-3/A"}
 
-# Cache directory
-CACHE_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "data", "edgar_cache")
+# Data directories
+DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "data")
+CACHE_DIR = os.path.join(DATA_DIR, "edgar_cache")
+DEMO_FILING_REGISTRY_PATH = os.path.join(DATA_DIR, "preferred_filing_registry.json")
+
+TICKER_TO_ISSUER_NAME = {
+    "JPM": "JPMorgan Chase",
+    "BAC": "Bank of America",
+    "GS": "Goldman Sachs",
+    "MS": "Morgan Stanley",
+    "WFC": "Wells Fargo",
+    "C": "Citigroup",
+    "USB": "US Bancorp",
+    "PNC": "PNC Financial",
+    "TFC": "Truist Financial",
+    "COF": "Capital One",
+    "MET": "MetLife",
+    "PRU": "Prudential Financial",
+    "ALL": "Allstate",
+    "PSA": "Public Storage",
+    "DLR": "Digital Realty",
+    "SPG": "Simon Property",
+    "DUK": "Duke Energy",
+    "SO": "Southern Company",
+    "NEE": "NextEra Energy",
+    "D": "Dominion Energy",
+    "T": "AT&T",
+}
 
 
 class EdgarPipeline:
@@ -507,10 +533,112 @@ class EdgarPipeline:
 
 
 # ---------------------------------------------------------------------------
-# Convenience function
+# Registry + convenience functions
 # ---------------------------------------------------------------------------
 
-def fetch_preferred_prospectus(ticker: str) -> Tuple[List[Dict], str]:
+def load_demo_filing_registry() -> Dict[str, Dict[str, Any]]:
+    """Load the committed quick-pick registry for cache-first demo tickers."""
+    if not os.path.exists(DEMO_FILING_REGISTRY_PATH):
+        return {}
+
+    with open(DEMO_FILING_REGISTRY_PATH, "r", encoding="utf-8") as f:
+        raw_registry = json.load(f)
+
+    registry: Dict[str, Dict[str, Any]] = {}
+    for ticker, entry in raw_registry.items():
+        registry[_normalize_preferred_ticker(ticker)] = entry
+    return registry
+
+
+def get_demo_filing_registry_entry(ticker: str) -> Optional[Dict[str, Any]]:
+    """Return the committed registry entry for a demo ticker, if present."""
+    return load_demo_filing_registry().get(_normalize_preferred_ticker(ticker))
+
+
+def resolve_preferred_filing(
+    ticker: str,
+    pipeline: Optional[EdgarPipeline] = None,
+    max_results: int = 20,
+) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
+    """
+    Resolve the best SEC filing for a preferred ticker without eagerly downloading
+    the full filing text.
+
+    Resolution order:
+    1. Committed quick-pick registry
+    2. EDGAR full-text search
+    3. EDGAR submissions fallback
+    """
+    pipeline = pipeline or EdgarPipeline()
+
+    requested_ticker = _normalize_preferred_ticker(ticker)
+    parent_ticker = requested_ticker.split("-")[0]
+
+    registry_entry = get_demo_filing_registry_entry(requested_ticker)
+    requested_series = (
+        registry_entry.get("expected_series")
+        if registry_entry
+        else _derive_series_hint(requested_ticker)
+    )
+
+    if registry_entry:
+        filing = _registry_entry_to_filing(requested_ticker, registry_entry)
+        resolution = _build_resolution_metadata(
+            requested_ticker=requested_ticker,
+            requested_series=requested_series,
+            selected_filing=filing,
+            source="registry",
+            validation_tokens=registry_entry.get("validation_tokens", []),
+            force_series_match=True,
+        )
+        print(f"  [EDGAR] Using demo filing registry for {requested_ticker}")
+        return [filing], resolution
+
+    issuer_name = TICKER_TO_ISSUER_NAME.get(parent_ticker, parent_ticker)
+
+    filings = pipeline.search_preferred_prospectuses(
+        issuer=issuer_name,
+        series_hint=requested_series,
+        date_start="2000-01-01",
+        max_results=max_results,
+    )
+    source = "full_text_search"
+
+    if not filings:
+        filings = pipeline.search_preferred_prospectuses(
+            issuer=issuer_name,
+            date_start="2000-01-01",
+            max_results=max_results,
+        )
+
+    if not filings:
+        filings = pipeline.get_issuer_filings(ticker, max_results=max_results)
+        source = "submissions"
+
+    if not filings:
+        return [], {
+            "requested_ticker": requested_ticker,
+            "requested_series": requested_series,
+            "source": "none",
+            "selected_filing": {},
+            "series_match": False,
+            "mismatch_warning": f"No prospectus candidates found for {requested_ticker}.",
+        }
+
+    best_filing = _select_best_filing(filings, requested_ticker, requested_series, pipeline)
+    resolution = _build_resolution_metadata(
+        requested_ticker=requested_ticker,
+        requested_series=requested_series,
+        selected_filing=best_filing,
+        source=source,
+    )
+    return filings, resolution
+
+
+def fetch_preferred_prospectus(
+    ticker: str,
+    download_text: bool = True,
+) -> Tuple[List[Dict[str, Any]], str, Dict[str, Any]]:
     """
     High-level convenience function: given a preferred stock ticker,
     find and download the most relevant prospectus filing.
@@ -519,71 +647,22 @@ def fetch_preferred_prospectus(ticker: str) -> Tuple[List[Dict], str]:
         ticker: Preferred stock ticker (e.g., "JPM-PD", "BAC-PL").
 
     Returns:
-        Tuple of (list of all matching filings, text of the best match).
+        Tuple of (list of candidate filings, text of selected filing, resolution metadata).
     """
     pipeline = EdgarPipeline()
+    filings, resolution = resolve_preferred_filing(ticker, pipeline=pipeline)
 
-    # Extract parent company name for search
-    parent_ticker = ticker.split("-")[0].upper()
-    requested_ticker = ticker.upper()
-    requested_series = _derive_series_hint(ticker)
+    selected_filing = resolution.get("selected_filing", {})
+    if not filings or not selected_filing or not download_text:
+        return filings, "", resolution
 
-    # Map common tickers to company names for better search results
-    ticker_to_name = {
-        "JPM": "JPMorgan Chase",
-        "BAC": "Bank of America",
-        "GS": "Goldman Sachs",
-        "MS": "Morgan Stanley",
-        "WFC": "Wells Fargo",
-        "C": "Citigroup",
-        "USB": "US Bancorp",
-        "PNC": "PNC Financial",
-        "TFC": "Truist Financial",
-        "COF": "Capital One",
-        "MET": "MetLife",
-        "PRU": "Prudential Financial",
-        "ALL": "Allstate",
-        "PSA": "Public Storage",
-        "DLR": "Digital Realty",
-        "SPG": "Simon Property",
-        "DUK": "Duke Energy",
-        "SO": "Southern Company",
-        "NEE": "NextEra Energy",
-        "D": "Dominion Energy",
-        "T": "AT&T",
-    }
+    text = pipeline.download_filing(selected_filing)
+    return filings, text, resolution
 
-    issuer_name = ticker_to_name.get(parent_ticker, parent_ticker)
 
-    # Search for preferred prospectuses. Try a series-specific search first, then
-    # fall back to a broader issuer-level search if needed.
-    filings = pipeline.search_preferred_prospectuses(
-        issuer=issuer_name,
-        series_hint=requested_series,
-        date_start="2000-01-01",
-        max_results=20,
-    )
-
-    if not filings:
-        filings = pipeline.search_preferred_prospectuses(
-            issuer=issuer_name,
-            date_start="2000-01-01",
-            max_results=20,
-        )
-
-    if not filings:
-        # Fallback to submissions API
-        filings = pipeline.get_issuer_filings(ticker, max_results=20)
-
-    if not filings:
-        return [], ""
-
-    # Score and select the best filing for the requested preferred series before
-    # downloading the full text for extraction.
-    best_filing = _select_best_filing(filings, requested_ticker, requested_series, pipeline)
-    text = pipeline.download_filing(best_filing)
-
-    return filings, text
+def _normalize_preferred_ticker(ticker: str) -> str:
+    """Normalize user input to the uppercase quick-pick / EDGAR lookup format."""
+    return ticker.strip().upper()
 
 
 def _derive_series_hint(ticker: str) -> str:
@@ -595,6 +674,12 @@ def _derive_series_hint(ticker: str) -> str:
     - BAC-PL -> Series L
     - C-PJ   -> Series J
     """
+    ticker = _normalize_preferred_ticker(ticker)
+
+    registry_entry = get_demo_filing_registry_entry(ticker)
+    if registry_entry and registry_entry.get("expected_series"):
+        return registry_entry["expected_series"]
+
     if "-" not in ticker:
         return ""
 
@@ -610,7 +695,8 @@ def _select_best_filing(
     requested_ticker: str,
     requested_series: str,
     pipeline: EdgarPipeline,
-    max_candidates: int = 5,
+    max_candidates: int = 4,
+    max_preview_downloads: int = 2,
 ) -> Dict[str, Any]:
     """
     Pick the filing that best matches the requested preferred ticker.
@@ -629,6 +715,7 @@ def _select_best_filing(
 
     best_filing = filings[0]
     best_score = float("-inf")
+    preview_downloads = 0
 
     for filing in filings[:max_candidates]:
         score = 0
@@ -645,18 +732,89 @@ def _select_best_filing(
         if ticker_token in metadata_blob or ticker_token_spaced in metadata_blob:
             score += 2
 
-        preview_text = pipeline.download_filing(filing, max_chars=12000)
-        preview_blob = preview_text.lower() if preview_text else ""
-        if series_token and series_token in preview_blob:
-            score += 6
-        if ticker_token in preview_blob or ticker_token_spaced in preview_blob:
-            score += 3
+        should_preview = (
+            preview_downloads < max_preview_downloads
+            and (
+                not series_token
+                or series_token not in metadata_blob
+            )
+        )
+        if should_preview:
+            preview_text = pipeline.download_filing(filing, max_chars=8000)
+            preview_blob = preview_text.lower() if preview_text else ""
+            preview_downloads += 1
+            if series_token and series_token in preview_blob:
+                score += 6
+            if ticker_token in preview_blob or ticker_token_spaced in preview_blob:
+                score += 3
 
         if score > best_score:
             best_score = score
             best_filing = filing
 
     return best_filing
+
+
+def _registry_entry_to_filing(ticker: str, entry: Dict[str, Any]) -> Dict[str, Any]:
+    """Convert a registry entry into the filing shape used by the EDGAR pipeline."""
+    filing = dict(entry)
+    filing["ticker"] = ticker
+    filing["tickers"] = [ticker]
+    filing.setdefault("issuer_name", entry.get("issuer"))
+    filing.setdefault("url", entry.get("filing_url"))
+    filing.setdefault("description", entry.get("expected_series", ""))
+    filing.setdefault("form_type", entry.get("form_type", "registry"))
+    return filing
+
+
+def _build_resolution_metadata(
+    requested_ticker: str,
+    requested_series: str,
+    selected_filing: Dict[str, Any],
+    source: str,
+    validation_tokens: Optional[List[str]] = None,
+    force_series_match: bool = False,
+) -> Dict[str, Any]:
+    """Build resolution metadata for downstream cache/extraction transparency."""
+    validation_tokens = validation_tokens or []
+
+    metadata_blob = " ".join(
+        str(selected_filing.get(key, ""))
+        for key in (
+            "issuer_name",
+            "description",
+            "filename",
+            "url",
+            "expected_series",
+            "security_name",
+        )
+    ).lower()
+
+    series_match = force_series_match
+    if not series_match:
+        tokens = [requested_series] + validation_tokens
+        tokens = [token for token in tokens if token]
+        series_match = any(token.lower() in metadata_blob for token in tokens)
+
+    mismatch_warning = None
+    if requested_series and not series_match:
+        mismatch_warning = (
+            f"Resolved filing for {requested_ticker} did not clearly match {requested_series}."
+        )
+
+    return {
+        "requested_ticker": requested_ticker,
+        "requested_series": requested_series,
+        "source": source,
+        "selected_filing": selected_filing,
+        "accession_number": selected_filing.get("accession_number", ""),
+        "filing_date": selected_filing.get("filing_date", ""),
+        "filing_url": selected_filing.get("url", ""),
+        "matched_series": selected_filing.get("expected_series") or requested_series,
+        "series_match": series_match,
+        "validation_tokens": validation_tokens,
+        "mismatch_warning": mismatch_warning,
+    }
 
 
 # ---------------------------------------------------------------------------

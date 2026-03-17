@@ -1,0 +1,86 @@
+{
+  "BAC-PL": {
+    "issuer": "Bank of America Corporation",
+    "issuer_cik": "0000070858",
+    "expected_series": "Series L",
+    "accession_number": "0000950144-08-000389",
+    "filing_date": "2008-01-24",
+    "form_type": "FWP",
+    "filing_url": "https://www.sec.gov/Archives/edgar/data/70858/000095014408000389/g11333fwfwp.htm",
+    "validation_tokens": [
+      "Series L",
+      "7.25%",
+      "BAC Pr L"
+    ]
+  },
+  "JPM-PD": {
+    "issuer": "JPMorgan Chase & Co.",
+    "issuer_cik": "0000019617",
+    "expected_series": "Series DD",
+    "accession_number": "0001193125-18-275976",
+    "filing_date": "2018-09-17",
+    "form_type": "FWP",
+    "filing_url": "https://www.sec.gov/Archives/edgar/data/19617/000119312518275976/d599694dfwp.htm",
+    "validation_tokens": [
+      "Series DD",
+      "5.75%",
+      "JPM PrD"
+    ]
+  },
+  "WFC-PL": {
+    "issuer": "Wells Fargo & Company",
+    "issuer_cik": "0000072971",
+    "expected_series": "Series L",
+    "accession_number": "0000950123-08-016143",
+    "filing_date": "2008-11-21",
+    "form_type": "424B3",
+    "filing_url": "https://www.sec.gov/Archives/edgar/data/72971/000095012308016143/y72243b3e424b3.htm",
+    "validation_tokens": [
+      "Series L",
+      "7.50%",
+      "WFC PrL"
+    ]
+  },
+  "MS-PA": {
+    "issuer": "Morgan Stanley",
+    "issuer_cik": "0000895421",
+    "expected_series": "Series A",
+    "accession_number": "0000950103-06-005427",
+    "filing_date": "2006-06-22",
+    "form_type": "FWP",
+    "filing_url": "https://www.sec.gov/Archives/edgar/data/895421/000095010306005427/dp67714_fwp.htm",
+    "validation_tokens": [
+      "Series A",
+      "Floating Rate",
+      "MS PrA"
+    ]
+  },
+  "GS-PD": {
+    "issuer": "The Goldman Sachs Group, Inc.",
+    "issuer_cik": "0000886982",
+    "expected_series": "Series D",
+    "accession_number": "0000950123-06-006614",
+    "filing_date": "2006-05-16",
+    "form_type": "424B2",
+    "filing_url": "https://www.sec.gov/Archives/edgar/data/886982/000095012306006614/e21362b2e424b2.htm",
+    "validation_tokens": [
+      "Series D",
+      "Floating Rate",
+      "GS PrD"
+    ]
+  },
+  "C-PJ": {
+    "issuer": "Citigroup Inc.",
+    "issuer_cik": "0000831001",
+    "expected_series": "Series J",
+    "accession_number": "0001193125-13-366036",
+    "filing_date": "2013-09-13",
+    "form_type": "FWP",
+    "filing_url": "https://www.sec.gov/Archives/edgar/data/831001/000119312513366036/d598465dfwp.htm",
+    "validation_tokens": [
+      "Series J",
+      "7.125%",
+      "C PrJ"
+    ]
+  }
+}

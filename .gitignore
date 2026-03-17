@@ -21,6 +21,8 @@ venv/
 # Data (large files)
 data/raw/*.pdf
 data/raw/*.html
+data/edgar_cache/filing_*.txt
+data/prospectus_terms/runtime/
 
 # OS
 .DS_Store

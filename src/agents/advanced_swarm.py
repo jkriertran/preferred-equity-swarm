@@ -224,7 +224,12 @@ def prospectus_agent(state: AdvancedSwarmState) -> dict:
         print(f"  [Prospectus Agent] FAILED: {terms['error']}")
     else:
         security_name = terms.get("security_name") or terms.get("series") or "prospectus terms"
-        print(f"  [Prospectus Agent] SUCCESS. Extracted {security_name}.")
+        source = terms.get("source", "live")
+        resolution_source = terms.get("resolution_source", "live")
+        print(
+            f"  [Prospectus Agent] SUCCESS. Extracted {security_name} "
+            f"({source}/{resolution_source})."
+        )
 
     return result
 
