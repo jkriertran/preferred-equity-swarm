@@ -7,11 +7,17 @@ When yfinance does not populate the top-level dividendRate or dividendYield
 fields (common for trust preferreds and some utility preferreds), this module
 falls back to computing the trailing annual dividend from the actual dividend
 payment history.
+
+Includes a snapshot fallback for demo securities to ensure reliability on 
+Streamlit Cloud when live data is blocked.
 """
 
 import yfinance as yf
 import pandas as pd
+import json
+import os
 from typing import Optional, List
+from datetime import datetime
 
 
 def get_ticker_variants(ticker: str) -> List[str]:
@@ -50,6 +56,36 @@ def get_ticker_variants(ticker: str) -> List[str]:
     # Remove duplicates while preserving order
     seen = set()
     return [x for x in variants if not (x in seen or seen.add(x))]
+
+
+def _get_snapshot_data(ticker: str) -> Optional[dict]:
+    """Retrieve market data from local snapshot if available."""
+    try:
+        # Resolve path relative to project root
+        base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        snapshot_path = os.path.join(base_dir, "data", "market_snapshots.json")
+        
+        if os.path.exists(snapshot_path):
+            with open(snapshot_path, "r") as f:
+                data = json.load(f)
+                market_data = data.get("market_data", {})
+                if ticker in market_data:
+                    snapshot = market_data[ticker]
+                    # Format to match get_preferred_info output
+                    return {
+                        "ticker": ticker,
+                        "yahoo_ticker": f"{ticker} (Snapshot)",
+                        "name": snapshot.get("name", "Unknown"),
+                        "price": snapshot.get("price"),
+                        "dividend_rate": snapshot.get("dividend_rate"),
+                        "dividend_yield": snapshot.get("dividend_yield"),
+                        "currency": snapshot.get("currency", "USD"),
+                        "is_snapshot": True,
+                        "as_of": snapshot.get("as_of")
+                    }
+    except Exception:
+        pass
+    return None
 
 
 def get_preferred_info(ticker: str) -> dict:
@@ -106,11 +142,19 @@ def get_preferred_info(ticker: str) -> dict:
                 "sector": info.get("sector", None),
                 "industry": info.get("industry", None),
                 "currency": info.get("currency", "USD"),
+                "is_snapshot": False
             }
             return result
         except Exception as e:
             last_error = str(e)
             continue
+
+    # ---------------------------------------------------------
+    # Final Fallback: Check local snapshots if live fetch failed
+    # ---------------------------------------------------------
+    snapshot = _get_snapshot_data(ticker)
+    if snapshot:
+        return snapshot
 
     return {"ticker": ticker, "error": last_error or "No data found for ticker or variants"}
 

@@ -4,17 +4,31 @@ Interest rate data fetcher for the Rate Sensitivity Agent.
 Uses FRED API for Treasury yields and SOFR rates when a FRED_API_KEY is
 configured.  Falls back to yfinance-based proxies when no key is available.
 
-The yfinance fallback now includes:
-  - A 3M Treasury proxy (via SGOV, the iShares 0-3 Month Treasury Bond ETF)
-    so that the benchmark resolution layer always has a short-rate anchor.
-  - A SOFR proxy derived from the same short-duration ETF, because overnight
-    SOFR and 1-3 month T-bill yields track each other closely.
+Includes a snapshot fallback for treasury yields and SOFR to ensure reliability
+on Streamlit Cloud when live data is blocked.
 """
 
 import pandas as pd
 import yfinance as yf
+import json
+import os
 from typing import Optional
 from src.utils.config import FRED_API_KEY
+
+
+def _get_snapshot_rates() -> Optional[dict]:
+    """Retrieve treasury rates from local snapshot if available."""
+    try:
+        base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        snapshot_path = os.path.join(base_dir, "data", "market_snapshots.json")
+        
+        if os.path.exists(snapshot_path):
+            with open(snapshot_path, "r") as f:
+                data = json.load(f)
+                return data.get("rates", {})
+    except Exception:
+        pass
+    return None
 
 
 # ---------------------------------------------------------------------------
@@ -48,6 +62,13 @@ def get_treasury_yields_from_yfinance() -> dict:
                 yields[maturity] = round(div_yield * 100, 2)
         except Exception:
             pass
+
+    # If yfinance failed to return anything, try snapshot fallback
+    if not yields:
+        snapshot = _get_snapshot_rates()
+        if snapshot:
+            # Convert decimal yields from snapshot back to percentages for this function
+            return {k: round(v * 100, 2) for k, v in snapshot.items() if k != "SOFR"}
 
     return yields
 
@@ -109,6 +130,7 @@ def get_sofr_rate() -> Optional[float]:
          Treasury ETF (SGOV or BIL).  Overnight SOFR and 1-3 month T-bill
          yields are highly correlated, so this is a reasonable proxy for
          analytical purposes when FRED access is unavailable.
+      3. Finally, check local snapshots if live fetch failed.
 
     Returns:
         Current SOFR rate as a percentage (e.g. 5.31), or None if unavailable.
@@ -133,5 +155,10 @@ def get_sofr_rate() -> Optional[float]:
                 return round(div_yield * 100, 2)
         except Exception:
             pass
+
+    # Tier 3: Local snapshot fallback
+    snapshot = _get_snapshot_rates()
+    if snapshot and "SOFR" in snapshot:
+        return round(snapshot["SOFR"] * 100, 2)
 
     return None

@@ -326,8 +326,16 @@ if analyze_button and ticker:
 
     header_subtitle = " ".join(header_parts)
 
+    # Check if this is snapshot data
+    is_snapshot = market_data.get("is_snapshot", False)
+    as_of = market_data.get("as_of", "")
+    
+    snapshot_badge = ""
+    if is_snapshot:
+        snapshot_badge = f' <span style="background-color:#6c757d;color:white;padding:2px 8px;border-radius:4px;font-size:0.7rem;vertical-align:middle;margin-left:8px;">SNAPSHOT DATA (As of {as_of})</span>'
+
     st.markdown(
-        f'<h2 style="margin-bottom:0;">{ticker}</h2>'
+        f'<h2 style="margin-bottom:0;">{ticker}{snapshot_badge}</h2>'
         f'<p style="font-size:1.1rem;color:#666;margin-top:0;">{security_name}<br>'
         f'{header_subtitle}</p>',
         unsafe_allow_html=True,

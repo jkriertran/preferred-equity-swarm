@@ -1,0 +1,133 @@
+{
+    "market_data": {
+        "BAC-PL": {
+            "ticker": "BAC-PL",
+            "name": "Bank of America Corporation",
+            "price": 1215.99,
+            "dividend_rate": 72.5,
+            "dividend_yield": 5.96,
+            "currency": "USD",
+            "as_of": "2026-03-17 22:04:41"
+        },
+        "C-PJ": {
+            "ticker": "C-PJ",
+            "name": "Citigroup Inc. Dep Shs Repstg 1/1000th Pfd Ser J",
+            "price": 25.1,
+            "dividend_rate": 1.781,
+            "dividend_yield": 0.0709,
+            "currency": "USD",
+            "as_of": "2026-03-17 22:04:42"
+        },
+        "C-PK": {
+            "ticker": "C-PK",
+            "name": "Citigroup Inc. Dep Shs Repstg 1/1000th Pfd Ser K",
+            "price": 25.45,
+            "dividend_rate": 1.72,
+            "dividend_yield": 0.0676,
+            "currency": "USD",
+            "as_of": "2026-03-17 22:04:43"
+        },
+        "C-PL": {
+            "ticker": "C-PL",
+            "name": "Citigroup Inc. Dep Shs Repstg 1/1000th Pfd Ser L",
+            "price": 26.2,
+            "dividend_rate": 1.72,
+            "dividend_yield": 0.0656,
+            "currency": "USD",
+            "as_of": "2026-03-17 22:04:44"
+        },
+        "C-PM": {
+            "ticker": "C-PM",
+            "name": "C-PM",
+            "price": null,
+            "dividend_rate": null,
+            "dividend_yield": null,
+            "currency": "USD",
+            "as_of": "2026-03-17 22:04:44"
+        },
+        "C-PN": {
+            "ticker": "C-PN",
+            "name": "Citigroup Capital XIII TR PFD SECS",
+            "price": 29.65,
+            "dividend_rate": 2.739845,
+            "dividend_yield": 0.09240623946037099,
+            "currency": "USD",
+            "as_of": "2026-03-17 22:04:45"
+        },
+        "GS-PD": {
+            "ticker": "GS-PD",
+            "name": "The Goldman Sachs Group, Inc.",
+            "price": 19.464,
+            "dividend_rate": 1.29,
+            "dividend_yield": 6.65,
+            "currency": "USD",
+            "as_of": "2026-03-17 22:04:45"
+        },
+        "JPM-PD": {
+            "ticker": "JPM-PD",
+            "name": "JPMorgan Chase & Co.",
+            "price": 24.71,
+            "dividend_rate": 1.44,
+            "dividend_yield": 5.82,
+            "currency": "USD",
+            "as_of": "2026-03-17 22:04:46"
+        },
+        "JPM-PJ": {
+            "ticker": "JPM-PJ",
+            "name": "JPMorgan Chase & Co.",
+            "price": 19.88,
+            "dividend_rate": 1.19,
+            "dividend_yield": 5.97,
+            "currency": "USD",
+            "as_of": "2026-03-17 22:04:46"
+        },
+        "MS-PA": {
+            "ticker": "MS-PA",
+            "name": "Morgan Stanley",
+            "price": 19.41,
+            "dividend_rate": 1.27,
+            "dividend_yield": 6.53,
+            "currency": "USD",
+            "as_of": "2026-03-17 22:04:46"
+        },
+        "T-PC": {
+            "ticker": "T-PC",
+            "name": "AT&T Inc.",
+            "price": 18.95,
+            "dividend_rate": 1.19,
+            "dividend_yield": 6.27,
+            "currency": "USD",
+            "as_of": "2026-03-17 22:04:47"
+        },
+        "WFC-PL": {
+            "ticker": "WFC-PL",
+            "name": "Wells Fargo & Company",
+            "price": 1182.0,
+            "dividend_rate": 75.0,
+            "dividend_yield": 6.36,
+            "currency": "USD",
+            "as_of": "2026-03-17 22:04:47"
+        },
+        "SCE-PL": {
+            "ticker": "SCE-PL",
+            "name": "SCE Trust VI 5% TR PREF SECS",
+            "price": 18.5,
+            "dividend_rate": 1.25,
+            "dividend_yield": 0.06756756756756757,
+            "currency": "USD",
+            "as_of": "2026-03-17 22:04:48"
+        }
+    },
+    "rates": {
+        "1M": 0.03605,
+        "5Y": 0.03786,
+        "10Y": 0.04202,
+        "30Y": 0.04852,
+        "3M": 0.0404,
+        "SOFR": 0.0404
+    },
+    "metadata": {
+        "last_updated": "2026-03-17 22:04:50",
+        "source": "yfinance snapshot"
+    }
+}
