@@ -106,11 +106,18 @@ KNOWN_NON_QDI_ISSUERS = {
 # The issuer name or security name typically contains "Trust" followed by a
 # Roman numeral or number.
 TRUST_PREFERRED_KEYWORDS = [
+    # "Trust" + Roman numeral patterns (with trailing space to avoid false matches)
     "trust i ", "trust ii ", "trust iii ", "trust iv ", "trust v ",
     "trust vi ", "trust vii ", "trust viii ", "trust ix ", "trust x ",
     "trust xi ", "trust xii ", "trust xiii ", "trust xiv ", "trust xv ",
+    # "Capital" + Roman numeral patterns (Citigroup Capital XIII, etc.)
+    "capital i ", "capital ii ", "capital iii ", "capital iv ", "capital v ",
+    "capital vi ", "capital vii ", "capital viii ", "capital ix ", "capital x ",
+    "capital xi ", "capital xii ", "capital xiii", "capital xiv ", "capital xv ",
+    # General trust keywords
     "capital trust", "statutory trust",
     "tr pref secs",  # yfinance shorthand (e.g., "SCE Trust VI 5% TR PREF SECS")
+    "trust preferred",  # explicit label
 ]
 
 
@@ -299,7 +306,24 @@ def _classify_qdi(
     if prospectus_qdi is True:
         return ("c_corp", True, "Prospectus indicates QDI eligibility.")
     if prospectus_qdi is False:
-        return ("unknown", False, "Prospectus indicates dividends are not QDI eligible.")
+        # Still determine the issuer type for classification purposes,
+        # but honor the prospectus's non-QDI determination.
+        issuer_lower = issuer.lower()
+        name_lower = security_name.lower() if security_name else ""
+        combined_check = f"{issuer_lower} {name_lower}"
+        for keyword in TRUST_PREFERRED_KEYWORDS:
+            if keyword in combined_check:
+                return (
+                    "trust",
+                    False,
+                    f"{issuer} is a trust preferred security. Trust preferred "
+                    f"distributions are classified as interest income and taxed "
+                    f"at ordinary income rates per the prospectus."
+                )
+        for non_qdi in KNOWN_NON_QDI_ISSUERS:
+            if non_qdi in issuer_lower:
+                return ("reit", False, "Prospectus indicates dividends are not QDI eligible.")
+        return ("non_qdi_corp", False, "Prospectus indicates dividends are not QDI eligible.")
 
     issuer_lower = issuer.lower()
     name_lower = security_name.lower() if security_name else ""

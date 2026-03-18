@@ -83,18 +83,32 @@
       "GS PrD"
     ]
   },
-  "C-PJ": {
-    "issuer": "Citigroup Inc.",
+  "C-PN": {
+    "issuer": "Citigroup Capital XIII",
     "issuer_cik": "0000831001",
-    "expected_series": "Series J",
-    "accession_number": "0001193125-13-366036",
-    "filing_date": "2013-09-13",
-    "form_type": "FWP",
-    "filing_url": "https://www.sec.gov/Archives/edgar/data/831001/000119312513366036/d598465dfwp.htm",
+    "expected_series": "Capital XIII",
+    "accession_number": "0000950123-10-091056",
+    "filing_date": "2010-09-30",
+    "form_type": "424B2",
+    "filing_url": "https://www.sec.gov/Archives/edgar/data/831001/000095012310091056/y86235b2e424b2.htm",
     "validation_tokens": [
-      "Series J",
-      "7.125%",
-      "C PrJ"
+      "Capital XIII",
+      "7.875%",
+      "Trust Preferred"
+    ]
+  },
+  "T-PC": {
+    "issuer": "AT&T Inc.",
+    "issuer_cik": "0000732717",
+    "expected_series": "Series C",
+    "accession_number": "0001193125-20-036498",
+    "filing_date": "2020-02-12",
+    "form_type": "424B2",
+    "filing_url": "https://www.sec.gov/Archives/edgar/data/732717/000119312520036498/d840947d424b2.htm",
+    "validation_tokens": [
+      "Series C",
+      "4.750%",
+      "AT&T"
     ]
   }
 }
