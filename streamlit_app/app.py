@@ -36,6 +36,7 @@ from src.data.security_resolver import (
     get_pff_tickers,
     search_by_issuer,
     validate_ticker_for_analysis,
+    get_universe_grouped_by_issuer,
 )
 
 
@@ -224,14 +225,31 @@ with col2:
     st.markdown("<br>", unsafe_allow_html=True)
     analyze_button = st.button("Analyze", type="primary", use_container_width=True)
 
-# Quick-pick buttons
-st.caption("Quick picks:")
-quick_cols = st.columns(max(len(quick_tickers), 1))
-for i, qt in enumerate(quick_tickers):
-    with quick_cols[i]:
-        if st.button(qt, use_container_width=True):
-            ticker = qt
-            analyze_button = True
+# ---------------------------------------------------------------------------
+# Curated Universe: Issuer-Grouped Ticker Picker
+# ---------------------------------------------------------------------------
+st.caption("Select from curated universe (65 securities, 22 issuers):")
+
+universe_groups = get_universe_grouped_by_issuer()
+demo_set = set(get_demo_tickers())
+
+for group in universe_groups:
+    issuer_label = f"**{group['issuer_name']}** ({group['parent_ticker']})"
+    tickers_in_group = group["tickers"]
+    num_cols = min(len(tickers_in_group), 8)
+    cols = st.columns([1.8] + [1] * num_cols)
+    with cols[0]:
+        st.markdown(f"<div style='padding-top:6px;font-size:0.85em;'>{issuer_label}</div>", unsafe_allow_html=True)
+    for j, t in enumerate(tickers_in_group):
+        with cols[j + 1]:
+            # Series letter only for the button label, with a visual indicator for cached
+            series_letter = t.split("-P")[-1] if "-P" in t else t
+            btn_label = f"{series_letter} *" if t in demo_set else series_letter
+            if st.button(btn_label, key=f"univ_{t}", use_container_width=True, help=t):
+                ticker = t
+                analyze_button = True
+
+st.caption("\* = prospectus cached (fast analysis)")
 
 # Validate ticker through the security resolver
 normalized = normalize_ticker(ticker.strip())

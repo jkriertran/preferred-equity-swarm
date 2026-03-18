@@ -401,6 +401,87 @@ def search_by_issuer(query: str) -> list:
     return results
 
 
+def get_universe_grouped_by_issuer() -> list:
+    """
+    Return the curated universe grouped by parent issuer, sorted alphabetically.
+
+    Returns
+    -------
+    list[dict]
+        Each entry has:
+            - parent_ticker: str (e.g., "BAC")
+            - issuer_name: str (e.g., "Bank of America")
+            - tickers: list[str] (e.g., ["BAC-PB", "BAC-PE", ...])
+            - has_cache: list[str] (tickers with prospectus cache)
+    """
+    universe = _load_universe()
+    demo_tickers = set(get_demo_tickers())
+
+    # Manual overrides for issuer display names that are hard to clean automatically
+    _ISSUER_DISPLAY_NAMES = {
+        "ALB": "Albemarle",
+        "ALL": "Allstate",
+        "APO": "Apollo Global",
+        "ARES": "Ares Management",
+        "ATH": "Athene Holding",
+        "BAC": "Bank of America",
+        "C": "Citigroup",
+        "COF": "Capital One",
+        "GS": "Goldman Sachs",
+        "HPE": "HP Enterprise",
+        "JPM": "JPMorgan Chase",
+        "MET": "MetLife",
+        "MS": "Morgan Stanley",
+        "MTB": "M&T Bank",
+        "NEE": "NextEra Energy",
+        "NLY": "Annaly Capital",
+        "ORCL": "Oracle",
+        "PCG": "PG&E",
+        "SCHW": "Charles Schwab",
+        "T": "AT&T",
+        "USB": "U.S. Bancorp",
+        "WFC": "Wells Fargo",
+    }
+
+    groups = {}
+    for ticker, entry in universe.items():
+        parent = entry.get("parent_ticker", "")
+        if not parent:
+            continue
+        if parent not in groups:
+            # Use manual override if available, otherwise try to clean automatically
+            if parent in _ISSUER_DISPLAY_NAMES:
+                short_name = _ISSUER_DISPLAY_NAMES[parent]
+            else:
+                raw_name = entry.get("issuer") or entry.get("pff_name") or entry.get("security_name") or parent
+                short_name = raw_name.split(" PERP ")[0].split(" PFD ")[0].split(" TR ")[0]
+                for suffix in [", Inc.", ", Inc", " Inc.", " Inc", " Corporation", " Corp", " Corp.",
+                               " Company", " Co.", " Co", " Ltd.", " Ltd", " LP", " L.P.",
+                               " Group, Inc.", " Group", " & Co.", " & Co", " & Company"]:
+                    if short_name.endswith(suffix):
+                        short_name = short_name[: -len(suffix)].strip()
+                        break
+            groups[parent] = {
+                "parent_ticker": parent,
+                "issuer_name": short_name,
+                "tickers": [],
+                "has_cache": [],
+            }
+        groups[parent]["tickers"].append(ticker)
+        if ticker in demo_tickers:
+            groups[parent]["has_cache"].append(ticker)
+
+    # Sort tickers within each group and sort groups by parent ticker
+    result = []
+    for parent in sorted(groups.keys()):
+        g = groups[parent]
+        g["tickers"] = sorted(g["tickers"])
+        g["has_cache"] = sorted(g["has_cache"])
+        result.append(g)
+
+    return result
+
+
 def validate_ticker_for_analysis(raw_ticker: str) -> dict:
     """
     Validate whether a ticker is suitable for full pipeline analysis.
