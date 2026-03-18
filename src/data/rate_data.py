@@ -50,6 +50,7 @@ def get_treasury_yields_from_yfinance() -> dict:
         "5Y": "IEI",     # iShares 3-7 Year Treasury Bond ETF
         "10Y": "IEF",    # iShares 7-10 Year Treasury Bond ETF
         "20Y": "TLT",    # iShares 20+ Year Treasury Bond ETF
+        "30Y": "EDV",    # Vanguard Extended Duration Treasury ETF
     }
 
     yields = {}

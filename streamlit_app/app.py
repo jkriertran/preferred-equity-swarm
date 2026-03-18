@@ -508,8 +508,18 @@ if analyze_button and ticker:
         st.markdown("**Treasury Yield Curve vs Preferred Yield**")
 
         if rate_data:
-            maturities = list(rate_data.keys())
-            yields_list = list(rate_data.values())
+            # Sort tenors by maturity duration for correct x-axis ordering
+            _TENOR_ORDER = {
+                "1M": 1, "2M": 2, "3M": 3, "6M": 6, "1Y": 12,
+                "2Y": 24, "3Y": 36, "5Y": 60, "7Y": 84,
+                "10Y": 120, "20Y": 240, "30Y": 360,
+            }
+            sorted_tenors = sorted(
+                rate_data.items(),
+                key=lambda kv: _TENOR_ORDER.get(kv[0], 999)
+            )
+            maturities = [t[0] for t in sorted_tenors]
+            yields_list = [t[1] for t in sorted_tenors]
 
             fig = go.Figure()
             fig.add_trace(go.Scatter(
