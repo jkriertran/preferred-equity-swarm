@@ -28,6 +28,15 @@ from src.data.prospectus_inventory import (
     get_quick_analysis_tickers,
     load_cached_prospectus_inventory,
 )
+from src.data.security_resolver import (
+    resolve_security,
+    normalize_ticker,
+    get_known_tickers,
+    get_demo_tickers,
+    get_pff_tickers,
+    search_by_issuer,
+    validate_ticker_for_analysis,
+)
 
 
 cached_inventory = load_cached_prospectus_inventory()
@@ -144,27 +153,54 @@ with st.sidebar:
 
     st.markdown("---")
 
-    # Quick Analysis inventory in sidebar (improvement #9)
-    st.subheader("Quick Analysis")
+    # Security Universe Browser
+    st.subheader("Security Universe")
+    demo_list = get_demo_tickers()
+    known_count = len(get_known_tickers())
+    pff_count = len(get_pff_tickers())
     st.write(
-        f"{len(cached_inventory)} cached prospectus profiles are available for fast analysis."
+        f"{known_count} securities in universe | "
+        f"{pff_count} in PFF ETF | "
+        f"{len(demo_list)} with prospectus cache"
     )
 
-    if cached_inventory:
-        inventory_df = pd.DataFrame(
-            [
-                {
-                    "Ticker": row["ticker"],
-                    "Issuer": row["issuer"],
-                    "Series": row["series"],
-                }
-                for row in cached_inventory
-            ]
-        )
-        st.dataframe(inventory_df, use_container_width=True, hide_index=True)
+    # Issuer search
+    issuer_query = st.text_input("Search by issuer", placeholder="e.g., Morgan Stanley")
+    if issuer_query:
+        search_results = search_by_issuer(issuer_query)
+        if search_results:
+            search_df = pd.DataFrame(
+                [
+                    {
+                        "Ticker": r["ticker"],
+                        "Name": (r.get("security_name") or "")[:35],
+                        "PFF": "Yes" if r.get("in_pff") else "",
+                        "Cache": "Yes" if r["ticker"] in demo_list else "",
+                    }
+                    for r in search_results
+                ]
+            )
+            st.dataframe(search_df, use_container_width=True, hide_index=True)
+        else:
+            st.caption("No matching securities found.")
+
+    # Demo securities table
+    with st.expander("Cached Securities (Fast Analysis)", expanded=False):
+        if cached_inventory:
+            inventory_df = pd.DataFrame(
+                [
+                    {
+                        "Ticker": row["ticker"],
+                        "Issuer": row["issuer"],
+                        "Series": row["series"],
+                    }
+                    for row in cached_inventory
+                ]
+            )
+            st.dataframe(inventory_df, use_container_width=True, hide_index=True)
 
     st.markdown("---")
-    st.caption("Phase 3: Full Analytical Swarm")
+    st.caption("Phase 3: Full Analytical Swarm | Security Resolver v1.0")
 
 
 # ---------------------------------------------------------------------------
@@ -197,15 +233,26 @@ for i, qt in enumerate(quick_tickers):
             ticker = qt
             analyze_button = True
 
-selected_inventory_entry = inventory_lookup.get(ticker.strip().upper())
-if selected_inventory_entry:
-    st.caption(
-        f"{ticker.strip().upper()} is available from {selected_inventory_entry['cache_label'].lower()} "
-        f"for quick analysis."
-    )
+# Validate ticker through the security resolver
+normalized = normalize_ticker(ticker.strip())
+validation = validate_ticker_for_analysis(normalized)
+resolution = validation["resolution"]
+
+if resolution["resolved"]:
+    source_label = resolution["resolution_source"].replace("_", " ").title()
+    cache_status = "Prospectus cached" if resolution["has_prospectus_cache"] else "No prospectus cache"
+    pff_status = "In PFF ETF" if resolution["in_pff"] else ""
+    badges = [f"Source: {source_label}", cache_status]
+    if pff_status:
+        badges.append(pff_status)
+    st.caption(" | ".join(badges))
+    if resolution.get("warnings"):
+        for w in resolution["warnings"]:
+            st.warning(w)
 else:
     st.caption(
-        "This ticker is not cached yet. The app will search live SEC filings."
+        f"{normalized} is not in the curated universe. "
+        "The app will attempt a live lookup, but results may be less reliable."
     )
 
 st.markdown("---")
@@ -227,7 +274,12 @@ if analyze_button and ticker:
             status_placeholder.info("Running Layer 1 (data), Layer 2 (rates), Layer 3 (analytics)...")
             progress_bar.progress(10, text="Agents running across 3 layers...")
 
-            result = analyze_preferred_advanced(ticker)
+            # Use normalized ticker for analysis
+            analysis_ticker = normalized
+            if not validation["valid"]:
+                st.error(validation["reason"])
+                st.stop()
+            result = analyze_preferred_advanced(analysis_ticker)
 
             quality = result.get("quality_report", {})
             if quality.get("passed", False):

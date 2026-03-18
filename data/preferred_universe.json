@@ -1,2015 +1,772 @@
-[
-  {
-    "accession_number": "0001193125-19-279717",
-    "filename": "d827430d424b2.htm",
-    "issuer_name": "JPMORGAN CHASE & CO  (JPM, AMJB, JPM-PC, JPM-PD, JPM-PJ, JPM-PK, JPM-PL, JPM-PM)",
-    "issuer_cik": "0000019617",
-    "tickers": [
-      "JPM",
-      "AMJB",
-      "JPM-PC",
-      "JPM-PD",
-      "JPM-PJ",
-      "JPM-PK",
-      "JPM-PL",
-      "JPM-PM"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2019-10-31",
-    "url": "https://www.sec.gov/Archives/edgar/data/19617/000119312519279717/d827430d424b2.htm",
-    "search_score": 27.502382
-  },
-  {
-    "accession_number": "0001193125-21-221545",
-    "filename": "d162878d424b2.htm",
-    "issuer_name": "JPMORGAN CHASE & CO  (JPM, AMJB, JPM-PC, JPM-PD, JPM-PJ, JPM-PK, JPM-PL, JPM-PM)",
-    "issuer_cik": "0000019617",
-    "tickers": [
-      "JPM",
-      "AMJB",
-      "JPM-PC",
-      "JPM-PD",
-      "JPM-PJ",
-      "JPM-PK",
-      "JPM-PL",
-      "JPM-PM"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2021-07-22",
-    "url": "https://www.sec.gov/Archives/edgar/data/19617/000119312521221545/d162878d424b2.htm",
-    "search_score": 27.491343
-  },
-  {
-    "accession_number": "0001193125-21-159984",
-    "filename": "d120343d424b2.htm",
-    "issuer_name": "JPMORGAN CHASE & CO  (JPM, AMJB, JPM-PC, JPM-PD, JPM-PJ, JPM-PK, JPM-PL, JPM-PM)",
-    "issuer_cik": "0000019617",
-    "tickers": [
-      "JPM",
-      "AMJB",
-      "JPM-PC",
-      "JPM-PD",
-      "JPM-PJ",
-      "JPM-PK",
-      "JPM-PL",
-      "JPM-PM"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2021-05-13",
-    "url": "https://www.sec.gov/Archives/edgar/data/19617/000119312521159984/d120343d424b2.htm",
-    "search_score": 27.483704
-  },
-  {
-    "accession_number": "0001193125-21-075655",
-    "filename": "d12358d424b2.htm",
-    "issuer_name": "JPMORGAN CHASE & CO  (JPM, AMJB, JPM-PC, JPM-PD, JPM-PJ, JPM-PK, JPM-PL, JPM-PM)",
-    "issuer_cik": "0000019617",
-    "tickers": [
-      "JPM",
-      "AMJB",
-      "JPM-PC",
-      "JPM-PD",
-      "JPM-PJ",
-      "JPM-PK",
-      "JPM-PL",
-      "JPM-PM"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2021-03-10",
-    "url": "https://www.sec.gov/Archives/edgar/data/19617/000119312521075655/d12358d424b2.htm",
-    "search_score": 27.47729
-  },
-  {
-    "accession_number": "0001193125-21-078773",
-    "filename": "d137102d424b2.htm",
-    "issuer_name": "JPMORGAN CHASE & CO  (JPM, AMJB, JPM-PC, JPM-PD, JPM-PJ, JPM-PK, JPM-PL, JPM-PM)",
-    "issuer_cik": "0000019617",
-    "tickers": [
-      "JPM",
-      "AMJB",
-      "JPM-PC",
-      "JPM-PD",
-      "JPM-PJ",
-      "JPM-PK",
-      "JPM-PL",
-      "JPM-PM"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2021-03-12",
-    "url": "https://www.sec.gov/Archives/edgar/data/19617/000119312521078773/d137102d424b2.htm",
-    "search_score": 27.460892
-  },
-  {
-    "accession_number": "0001193125-15-017368",
-    "filename": "d854669d424b5.htm",
-    "issuer_name": "BANK OF AMERICA CORP /DE/  (BAC, BAC-PB, BAC-PE, BAC-PK, BAC-PL, BAC-PM, BAC-PN, BAC-PO, BAC-PP, BML-PG, BML-PH, BML-PJ, BML-PL)",
-    "issuer_cik": "0000070858",
-    "tickers": [
-      "BAC",
-      "BAC-PB",
-      "BAC-PE",
-      "BAC-PK",
-      "BAC-PL",
-      "BAC-PM",
-      "BAC-PN",
-      "BAC-PO",
-      "BAC-PP",
-      "BML-PG",
-      "BML-PH",
-      "BML-PJ",
-      "BML-PL"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2015-01-22",
-    "url": "https://www.sec.gov/Archives/edgar/data/70858/000119312515017368/d854669d424b5.htm",
-    "search_score": 20.474953
-  },
-  {
-    "accession_number": "0001193125-22-019216",
-    "filename": "d278452d424b2.htm",
-    "issuer_name": "BANK OF AMERICA CORP /DE/  (BAC, BAC-PB, BAC-PE, BAC-PK, BAC-PL, BAC-PM, BAC-PN, BAC-PO, BAC-PP, BML-PG, BML-PH, BML-PJ, BML-PL)",
-    "issuer_cik": "0000070858",
-    "tickers": [
-      "BAC",
-      "BAC-PB",
-      "BAC-PE",
-      "BAC-PK",
-      "BAC-PL",
-      "BAC-PM",
-      "BAC-PN",
-      "BAC-PO",
-      "BAC-PP",
-      "BML-PG",
-      "BML-PH",
-      "BML-PJ",
-      "BML-PL"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2022-01-27",
-    "url": "https://www.sec.gov/Archives/edgar/data/70858/000119312522019216/d278452d424b2.htm",
-    "search_score": 20.440945
-  },
-  {
-    "accession_number": "0001193125-22-013031",
-    "filename": "d297497d424b2.htm",
-    "issuer_name": "BANK OF AMERICA CORP /DE/  (BAC, BAC-PB, BAC-PE, BAC-PK, BAC-PL, BAC-PM, BAC-PN, BAC-PO, BAC-PP, BML-PG, BML-PH, BML-PJ, BML-PL)",
-    "issuer_cik": "0000070858",
-    "tickers": [
-      "BAC",
-      "BAC-PB",
-      "BAC-PE",
-      "BAC-PK",
-      "BAC-PL",
-      "BAC-PM",
-      "BAC-PN",
-      "BAC-PO",
-      "BAC-PP",
-      "BML-PG",
-      "BML-PH",
-      "BML-PJ",
-      "BML-PL"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2022-01-20",
-    "url": "https://www.sec.gov/Archives/edgar/data/70858/000119312522013031/d297497d424b2.htm",
-    "search_score": 20.4351
-  },
-  {
-    "accession_number": "0001193125-18-219282",
-    "filename": "d922997d424b2.htm",
-    "issuer_name": "BANK OF AMERICA CORP /DE/  (BAC, BAC-PB, BAC-PE, BAC-PK, BAC-PL, BAC-PM, BAC-PN, BAC-PO, BAC-PP, BML-PG, BML-PH, BML-PJ, BML-PL)",
-    "issuer_cik": "0000070858",
-    "tickers": [
-      "BAC",
-      "BAC-PB",
-      "BAC-PE",
-      "BAC-PK",
-      "BAC-PL",
-      "BAC-PM",
-      "BAC-PN",
-      "BAC-PO",
-      "BAC-PP",
-      "BML-PG",
-      "BML-PH",
-      "BML-PJ",
-      "BML-PL"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2018-07-17",
-    "url": "https://www.sec.gov/Archives/edgar/data/70858/000119312518219282/d922997d424b2.htm",
-    "search_score": 20.431677
-  },
-  {
-    "accession_number": "0001193125-22-015662",
-    "filename": "d297497d424b5.htm",
-    "issuer_name": "BANK OF AMERICA CORP /DE/  (BAC, BAC-PB, BAC-PE, BAC-PK, BAC-PL, BAC-PM, BAC-PN, BAC-PO, BAC-PP, BML-PG, BML-PH, BML-PJ, BML-PL)",
-    "issuer_cik": "0000070858",
-    "tickers": [
-      "BAC",
-      "BAC-PB",
-      "BAC-PE",
-      "BAC-PK",
-      "BAC-PL",
-      "BAC-PM",
-      "BAC-PN",
-      "BAC-PO",
-      "BAC-PP",
-      "BML-PG",
-      "BML-PH",
-      "BML-PJ",
-      "BML-PL"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2022-01-24",
-    "url": "https://www.sec.gov/Archives/edgar/data/70858/000119312522015662/d297497d424b5.htm",
-    "search_score": 20.427866
-  },
-  {
-    "accession_number": "0001193125-19-170814",
-    "filename": "d742904d424b2.htm",
-    "issuer_name": "GOLDMAN SACHS GROUP INC  (GS, GSCE, GS-PA, GS-PC, GS-PD)",
-    "issuer_cik": "0000886982",
-    "tickers": [
-      "GS",
-      "GSCE",
-      "GS-PA",
-      "GS-PC",
-      "GS-PD"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2019-06-12",
-    "url": "https://www.sec.gov/Archives/edgar/data/886982/000119312519170814/d742904d424b2.htm",
-    "search_score": 28.629007
-  },
-  {
-    "accession_number": "0001193125-19-292430",
-    "filename": "d54234d424b2.htm",
-    "issuer_name": "GOLDMAN SACHS GROUP INC  (GS, GSCE, GS-PA, GS-PC, GS-PD)",
-    "issuer_cik": "0000886982",
-    "tickers": [
-      "GS",
-      "GSCE",
-      "GS-PA",
-      "GS-PC",
-      "GS-PD"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2019-11-14",
-    "url": "https://www.sec.gov/Archives/edgar/data/886982/000119312519292430/d54234d424b2.htm",
-    "search_score": 28.624907
-  },
-  {
-    "accession_number": "0001193125-24-221781",
-    "filename": "d872250d424b2.htm",
-    "issuer_name": "GOLDMAN SACHS GROUP INC  (GS, GSCE, GS-PA, GS-PC, GS-PD)",
-    "issuer_cik": "0000886982",
-    "tickers": [
-      "GS",
-      "GSCE",
-      "GS-PA",
-      "GS-PC",
-      "GS-PD"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2024-09-19",
-    "url": "https://www.sec.gov/Archives/edgar/data/886982/000119312524221781/d872250d424b2.htm",
-    "search_score": 28.621284
-  },
-  {
-    "accession_number": "0001193125-20-012603",
-    "filename": "d861920d424b2.htm",
-    "issuer_name": "GOLDMAN SACHS GROUP INC  (GS, GSCE, GS-PA, GS-PC, GS-PD)",
-    "issuer_cik": "0000886982",
-    "tickers": [
-      "GS",
-      "GSCE",
-      "GS-PA",
-      "GS-PC",
-      "GS-PD"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2020-01-23",
-    "url": "https://www.sec.gov/Archives/edgar/data/886982/000119312520012603/d861920d424b2.htm",
-    "search_score": 28.613417
-  },
-  {
-    "accession_number": "0001193125-24-097037",
-    "filename": "d823598d424b2.htm",
-    "issuer_name": "GOLDMAN SACHS GROUP INC  (GS, GSCE, GS-PA, GS-PC, GS-PD)",
-    "issuer_cik": "0000886982",
-    "tickers": [
-      "GS",
-      "GSCE",
-      "GS-PA",
-      "GS-PC",
-      "GS-PD"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2024-04-16",
-    "url": "https://www.sec.gov/Archives/edgar/data/886982/000119312524097037/d823598d424b2.htm",
-    "search_score": 28.609093
-  },
-  {
-    "accession_number": "0000950103-21-016145",
-    "filename": "dp160069_424b2-serieso.htm",
-    "issuer_name": "MORGAN STANLEY  (MS, MS-PA, MS-PE, MS-PF, MS-PI, MS-PK, MS-PL, MS-PO, MS-PP, MS-PQ, MSTLW)",
-    "issuer_cik": "0000895421",
-    "tickers": [
-      "MS",
-      "MS-PA",
-      "MS-PE",
-      "MS-PF",
-      "MS-PI",
-      "MS-PK",
-      "MS-PL",
-      "MS-PO",
-      "MS-PP",
-      "MS-PQ",
-      "MSTLW"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2021-10-20",
-    "url": "https://www.sec.gov/Archives/edgar/data/895421/000095010321016145/dp160069_424b2-serieso.htm",
-    "search_score": 26.584139
-  },
-  {
-    "accession_number": "0000950103-21-015958",
-    "filename": "dp159881_424b2-serieso.htm",
-    "issuer_name": "MORGAN STANLEY  (MS, MS-PA, MS-PE, MS-PF, MS-PI, MS-PK, MS-PL, MS-PO, MS-PP, MS-PQ, MSTLW)",
-    "issuer_cik": "0000895421",
-    "tickers": [
-      "MS",
-      "MS-PA",
-      "MS-PE",
-      "MS-PF",
-      "MS-PI",
-      "MS-PK",
-      "MS-PL",
-      "MS-PO",
-      "MS-PP",
-      "MS-PQ",
-      "MSTLW"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2021-10-18",
-    "url": "https://www.sec.gov/Archives/edgar/data/895421/000095010321015958/dp159881_424b2-serieso.htm",
-    "search_score": 26.547234
-  },
-  {
-    "accession_number": "0000950103-15-002079",
-    "filename": "dp54408_424b2-seriesj.htm",
-    "issuer_name": "MORGAN STANLEY  (MS, MS-PA, MS-PE, MS-PF, MS-PI, MS-PK, MS-PL, MS-PO, MS-PP, MS-PQ, MSTLW)",
-    "issuer_cik": "0000895421",
-    "tickers": [
-      "MS",
-      "MS-PA",
-      "MS-PE",
-      "MS-PF",
-      "MS-PI",
-      "MS-PK",
-      "MS-PL",
-      "MS-PO",
-      "MS-PP",
-      "MS-PQ",
-      "MSTLW"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2015-03-16",
-    "url": "https://www.sec.gov/Archives/edgar/data/895421/000095010315002079/dp54408_424b2-seriesj.htm",
-    "search_score": 26.535421
-  },
-  {
-    "accession_number": "0000950103-22-013344",
-    "filename": "dp178028_424b2-finalps.htm",
-    "issuer_name": "MORGAN STANLEY  (MS, MS-PA, MS-PE, MS-PF, MS-PI, MS-PK, MS-PL, MS-PO, MS-PP, MS-PQ, MSTLW)",
-    "issuer_cik": "0000895421",
-    "tickers": [
-      "MS",
-      "MS-PA",
-      "MS-PE",
-      "MS-PF",
-      "MS-PI",
-      "MS-PK",
-      "MS-PL",
-      "MS-PO",
-      "MS-PP",
-      "MS-PQ",
-      "MSTLW"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2022-08-01",
-    "url": "https://www.sec.gov/Archives/edgar/data/895421/000095010322013344/dp178028_424b2-finalps.htm",
-    "search_score": 26.531029
-  },
-  {
-    "accession_number": "0000950103-17-000557",
-    "filename": "dp72147_424b2-seriesk.htm",
-    "issuer_name": "MORGAN STANLEY  (MS, MS-PA, MS-PE, MS-PF, MS-PI, MS-PK, MS-PL, MS-PO, MS-PP, MS-PQ, MSTLW)",
-    "issuer_cik": "0000895421",
-    "tickers": [
-      "MS",
-      "MS-PA",
-      "MS-PE",
-      "MS-PF",
-      "MS-PI",
-      "MS-PK",
-      "MS-PL",
-      "MS-PO",
-      "MS-PP",
-      "MS-PQ",
-      "MSTLW"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2017-01-24",
-    "url": "https://www.sec.gov/Archives/edgar/data/895421/000095010317000557/dp72147_424b2-seriesk.htm",
-    "search_score": 26.526848
-  },
-  {
-    "accession_number": "0001193125-19-027039",
-    "filename": "d655587d424b2.htm",
-    "issuer_name": "WELLS FARGO & COMPANY/MN  (WFC, WFCNP, WFC-PA, WFC-PC, WFC-PD, WFC-PL, WFC-PY, WFC-PZ)",
-    "issuer_cik": "0000072971",
-    "tickers": [
-      "WFC",
-      "WFCNP",
-      "WFC-PA",
-      "WFC-PC",
-      "WFC-PD",
-      "WFC-PL",
-      "WFC-PY",
-      "WFC-PZ"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2019-02-04",
-    "url": "https://www.sec.gov/Archives/edgar/data/72971/000119312519027039/d655587d424b2.htm",
-    "search_score": 26.808659
-  },
-  {
-    "accession_number": "0001193125-19-025150",
-    "filename": "d692716d424b2.htm",
-    "issuer_name": "WELLS FARGO & COMPANY/MN  (WFC, WFCNP, WFC-PA, WFC-PC, WFC-PD, WFC-PL, WFC-PY, WFC-PZ)",
-    "issuer_cik": "0000072971",
-    "tickers": [
-      "WFC",
-      "WFCNP",
-      "WFC-PA",
-      "WFC-PC",
-      "WFC-PD",
-      "WFC-PL",
-      "WFC-PY",
-      "WFC-PZ"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2019-02-01",
-    "url": "https://www.sec.gov/Archives/edgar/data/72971/000119312519025150/d692716d424b2.htm",
-    "search_score": 26.768684
-  },
-  {
-    "accession_number": "0001193125-17-056463",
-    "filename": "d242788d424b2.htm",
-    "issuer_name": "WELLS FARGO & COMPANY/MN  (WFC, WFCNP, WFC-PA, WFC-PC, WFC-PD, WFC-PL, WFC-PY, WFC-PZ)",
-    "issuer_cik": "0000072971",
-    "tickers": [
-      "WFC",
-      "WFCNP",
-      "WFC-PA",
-      "WFC-PC",
-      "WFC-PD",
-      "WFC-PL",
-      "WFC-PY",
-      "WFC-PZ"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2017-02-24",
-    "url": "https://www.sec.gov/Archives/edgar/data/72971/000119312517056463/d242788d424b2.htm",
-    "search_score": 26.693327
-  },
-  {
-    "accession_number": "0001193125-17-012921",
-    "filename": "d328952d424b2.htm",
-    "issuer_name": "WELLS FARGO & COMPANY/MN  (WFC, WFCNP, WFC-PA, WFC-PC, WFC-PD, WFC-PL, WFC-PY, WFC-PZ)",
-    "issuer_cik": "0000072971",
-    "tickers": [
-      "WFC",
-      "WFCNP",
-      "WFC-PA",
-      "WFC-PC",
-      "WFC-PD",
-      "WFC-PL",
-      "WFC-PY",
-      "WFC-PZ"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2017-01-19",
-    "url": "https://www.sec.gov/Archives/edgar/data/72971/000119312517012921/d328952d424b2.htm",
-    "search_score": 26.658918
-  },
-  {
-    "accession_number": "0001193125-17-125338",
-    "filename": "d325635d424b2.htm",
-    "issuer_name": "WELLS FARGO & COMPANY/MN  (WFC, WFCNP, WFC-PA, WFC-PC, WFC-PD, WFC-PL, WFC-PY, WFC-PZ)",
-    "issuer_cik": "0000072971",
-    "tickers": [
-      "WFC",
-      "WFCNP",
-      "WFC-PA",
-      "WFC-PC",
-      "WFC-PD",
-      "WFC-PL",
-      "WFC-PY",
-      "WFC-PZ"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2017-04-17",
-    "url": "https://www.sec.gov/Archives/edgar/data/72971/000119312517125338/d325635d424b2.htm",
-    "search_score": 26.644205
-  },
-  {
-    "accession_number": "0001193125-16-440004",
-    "filename": "d33811d424b2.htm",
-    "issuer_name": "CITIGROUP INC  (C, C-PN)",
-    "issuer_cik": "0000831001",
-    "tickers": [
-      "C",
-      "C-PN"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2016-01-27",
-    "url": "https://www.sec.gov/Archives/edgar/data/831001/000119312516440004/d33811d424b2.htm",
-    "search_score": 21.822966
-  },
-  {
-    "accession_number": "0001193125-16-443755",
-    "filename": "d33811d424b2.htm",
-    "issuer_name": "CITIGROUP INC  (C, C-PN)",
-    "issuer_cik": "0000831001",
-    "tickers": [
-      "C",
-      "C-PN"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2016-01-29",
-    "url": "https://www.sec.gov/Archives/edgar/data/831001/000119312516443755/d33811d424b2.htm",
-    "search_score": 21.822966
-  },
-  {
-    "accession_number": "0001193125-16-437634",
-    "filename": "d117584d424b2.htm",
-    "issuer_name": "CITIGROUP INC  (C, C-PN)",
-    "issuer_cik": "0000831001",
-    "tickers": [
-      "C",
-      "C-PN"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2016-01-26",
-    "url": "https://www.sec.gov/Archives/edgar/data/831001/000119312516437634/d117584d424b2.htm",
-    "search_score": 21.821709
-  },
-  {
-    "accession_number": "0001193125-15-367299",
-    "filename": "d62460d424b2.htm",
-    "issuer_name": "CITIGROUP INC  (C, C-PN)",
-    "issuer_cik": "0000831001",
-    "tickers": [
-      "C",
-      "C-PN"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2015-11-05",
-    "url": "https://www.sec.gov/Archives/edgar/data/831001/000119312515367299/d62460d424b2.htm",
-    "search_score": 21.807293
-  },
-  {
-    "accession_number": "0001193125-16-544000",
-    "filename": "d180182d424b2.htm",
-    "issuer_name": "CITIGROUP INC  (C, C-PN)",
-    "issuer_cik": "0000831001",
-    "tickers": [
-      "C",
-      "C-PN"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2016-04-18",
-    "url": "https://www.sec.gov/Archives/edgar/data/831001/000119312516544000/d180182d424b2.htm",
-    "search_score": 21.799286
-  },
-  {
-    "accession_number": "0001104659-23-084578",
-    "filename": "tm238732-1_424b5.htm",
-    "issuer_name": "L3HARRIS TECHNOLOGIES, INC. /DE/  (LHX)",
-    "issuer_cik": "0000202058",
-    "tickers": [
-      "LHX"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2023-07-27",
-    "url": "https://www.sec.gov/Archives/edgar/data/202058/000110465923084578/tm238732-1_424b5.htm",
-    "search_score": 18.603607
-  },
-  {
-    "accession_number": "0001104659-23-085542",
-    "filename": "tm238732-2_424b5.htm",
-    "issuer_name": "L3HARRIS TECHNOLOGIES, INC. /DE/  (LHX)",
-    "issuer_cik": "0000202058",
-    "tickers": [
-      "LHX"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2023-07-31",
-    "url": "https://www.sec.gov/Archives/edgar/data/202058/000110465923085542/tm238732-2_424b5.htm",
-    "search_score": 18.599218
-  },
-  {
-    "accession_number": "0001193125-17-245117",
-    "filename": "d426666d424b5.htm",
-    "issuer_name": "Digital Realty Trust, Inc.  (DLR, DLR-PJ, DLR-PK, DLR-PL)",
-    "issuer_cik": "0001297996",
-    "tickers": [
-      "DLR",
-      "DLR-PJ",
-      "DLR-PK",
-      "DLR-PL"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2017-08-02",
-    "url": "https://www.sec.gov/Archives/edgar/data/1297996/000119312517245117/d426666d424b5.htm",
-    "search_score": 18.150333
-  },
-  {
-    "accession_number": "0001047469-16-017041",
-    "filename": "a2230425z424b5.htm",
-    "issuer_name": "ALLSTATE CORP  (ALL, ALL-PB, ALL-PH, ALL-PI, ALL-PJ)",
-    "issuer_cik": "0000899051",
-    "tickers": [
-      "ALL",
-      "ALL-PB",
-      "ALL-PH",
-      "ALL-PI",
-      "ALL-PJ"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2016-12-02",
-    "url": "https://www.sec.gov/Archives/edgar/data/899051/000104746916017041/a2230425z424b5.htm",
-    "search_score": 17.872581
-  },
-  {
-    "accession_number": "0001193125-21-217505",
-    "filename": "d180866d424b2.htm",
-    "issuer_name": "STIFEL FINANCIAL CORP  (SF, SFB, SF-PB, SF-PC, SF-PD)",
-    "issuer_cik": "0000720672",
-    "tickers": [
-      "SF",
-      "SFB",
-      "SF-PB",
-      "SF-PC",
-      "SF-PD"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2021-07-16",
-    "url": "https://www.sec.gov/Archives/edgar/data/720672/000119312521217505/d180866d424b2.htm",
-    "search_score": 17.771723
-  },
-  {
-    "accession_number": "0001193125-19-196097",
-    "filename": "d754370d424b5.htm",
-    "issuer_name": "PNC FINANCIAL SERVICES GROUP, INC.  (PNC)",
-    "issuer_cik": "0000713676",
-    "tickers": [
-      "PNC"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2019-07-18",
-    "url": "https://www.sec.gov/Archives/edgar/data/713676/000119312519196097/d754370d424b5.htm",
-    "search_score": 22.089151
-  },
-  {
-    "accession_number": "0001193125-19-197829",
-    "filename": "d754370d424b2.htm",
-    "issuer_name": "PNC FINANCIAL SERVICES GROUP, INC.  (PNC)",
-    "issuer_cik": "0000713676",
-    "tickers": [
-      "PNC"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2019-07-19",
-    "url": "https://www.sec.gov/Archives/edgar/data/713676/000119312519197829/d754370d424b2.htm",
-    "search_score": 22.052258
-  },
-  {
-    "accession_number": "0001193125-19-011043",
-    "filename": "d687481d424b5.htm",
-    "issuer_name": "PNC FINANCIAL SERVICES GROUP, INC.  (PNC)",
-    "issuer_cik": "0000713676",
-    "tickers": [
-      "PNC"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2019-01-17",
-    "url": "https://www.sec.gov/Archives/edgar/data/713676/000119312519011043/d687481d424b5.htm",
-    "search_score": 22.015215
-  },
-  {
-    "accession_number": "0001193125-19-108995",
-    "filename": "d717195d424b2.htm",
-    "issuer_name": "PNC FINANCIAL SERVICES GROUP, INC.  (PNC)",
-    "issuer_cik": "0000713676",
-    "tickers": [
-      "PNC"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2019-04-17",
-    "url": "https://www.sec.gov/Archives/edgar/data/713676/000119312519108995/d717195d424b2.htm",
-    "search_score": 21.998196
-  },
-  {
-    "accession_number": "0001193125-17-173213",
-    "filename": "d388457d424b2.htm",
-    "issuer_name": "PNC FINANCIAL SERVICES GROUP, INC.  (PNC)",
-    "issuer_cik": "0000713676",
-    "tickers": [
-      "PNC"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2017-05-17",
-    "url": "https://www.sec.gov/Archives/edgar/data/713676/000119312517173213/d388457d424b2.htm",
-    "search_score": 21.978855
-  },
-  {
-    "accession_number": "0001193125-20-171371",
-    "filename": "d943456d424b5.htm",
-    "issuer_name": "TRUIST FINANCIAL CORP  (TFC, TFC-PI, TFC-PO, TFC-PR)",
-    "issuer_cik": "0000092230",
-    "tickers": [
-      "TFC",
-      "TFC-PI",
-      "TFC-PO",
-      "TFC-PR"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2020-06-17",
-    "url": "https://www.sec.gov/Archives/edgar/data/92230/000119312520171371/d943456d424b5.htm",
-    "search_score": 25.415443
-  },
-  {
-    "accession_number": "0001193125-20-148026",
-    "filename": "d825819d424b5.htm",
-    "issuer_name": "TRUIST FINANCIAL CORP  (TFC, TFC-PI, TFC-PO, TFC-PR)",
-    "issuer_cik": "0000092230",
-    "tickers": [
-      "TFC",
-      "TFC-PI",
-      "TFC-PO",
-      "TFC-PR"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2020-05-21",
-    "url": "https://www.sec.gov/Archives/edgar/data/92230/000119312520148026/d825819d424b5.htm",
-    "search_score": 25.285376
-  },
-  {
-    "accession_number": "0001193125-20-206668",
-    "filename": "d37705d424b5.htm",
-    "issuer_name": "TRUIST FINANCIAL CORP  (TFC, TFC-PI, TFC-PO, TFC-PR)",
-    "issuer_cik": "0000092230",
-    "tickers": [
-      "TFC",
-      "TFC-PI",
-      "TFC-PO",
-      "TFC-PR"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2020-07-31",
-    "url": "https://www.sec.gov/Archives/edgar/data/92230/000119312520206668/d37705d424b5.htm",
-    "search_score": 25.192427
-  },
-  {
-    "accession_number": "0001193125-20-154313",
-    "filename": "d893550d424b5.htm",
-    "issuer_name": "TRUIST FINANCIAL CORP  (TFC, TFC-PI, TFC-PO, TFC-PR)",
-    "issuer_cik": "0000092230",
-    "tickers": [
-      "TFC",
-      "TFC-PI",
-      "TFC-PO",
-      "TFC-PR"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2020-05-28",
-    "url": "https://www.sec.gov/Archives/edgar/data/92230/000119312520154313/d893550d424b5.htm",
-    "search_score": 25.155487
-  },
-  {
-    "accession_number": "0001193125-22-009975",
-    "filename": "d273504d424b2.htm",
-    "issuer_name": "TRUIST FINANCIAL CORP  (TFC, TFC-PI, TFC-PO, TFC-PR)",
-    "issuer_cik": "0000092230",
-    "tickers": [
-      "TFC",
-      "TFC-PI",
-      "TFC-PO",
-      "TFC-PR"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2022-01-14",
-    "url": "https://www.sec.gov/Archives/edgar/data/92230/000119312522009975/d273504d424b2.htm",
-    "search_score": 24.460293
-  },
-  {
-    "accession_number": "0001193125-21-223726",
-    "filename": "d170498d424b5.htm",
-    "issuer_name": "CAPITAL ONE FINANCIAL CORP  (COF, COF-PI, COF-PJ, COF-PK, COF-PL, COF-PN)",
-    "issuer_cik": "0000927628",
-    "tickers": [
-      "COF",
-      "COF-PI",
-      "COF-PJ",
-      "COF-PK",
-      "COF-PL",
-      "COF-PN"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2021-07-26",
-    "url": "https://www.sec.gov/Archives/edgar/data/927628/000119312521223726/d170498d424b5.htm",
-    "search_score": 19.135155
-  },
-  {
-    "accession_number": "0001193125-20-242702",
-    "filename": "d53046d424b5.htm",
-    "issuer_name": "CAPITAL ONE FINANCIAL CORP  (COF, COF-PI, COF-PJ, COF-PK, COF-PL, COF-PN)",
-    "issuer_cik": "0000927628",
-    "tickers": [
-      "COF",
-      "COF-PI",
-      "COF-PJ",
-      "COF-PK",
-      "COF-PL",
-      "COF-PN"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2020-09-10",
-    "url": "https://www.sec.gov/Archives/edgar/data/927628/000119312520242702/d53046d424b5.htm",
-    "search_score": 19.12236
-  },
-  {
-    "accession_number": "0001193125-15-292760",
-    "filename": "d42763d424b5.htm",
-    "issuer_name": "CAPITAL ONE FINANCIAL CORP  (COF, COF-PI, COF-PJ, COF-PK, COF-PL, COF-PN)",
-    "issuer_cik": "0000927628",
-    "tickers": [
-      "COF",
-      "COF-PI",
-      "COF-PJ",
-      "COF-PK",
-      "COF-PL",
-      "COF-PN"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2015-08-17",
-    "url": "https://www.sec.gov/Archives/edgar/data/927628/000119312515292760/d42763d424b5.htm",
-    "search_score": 19.10954
-  },
-  {
-    "accession_number": "0001193125-20-244133",
-    "filename": "d53046d424b2.htm",
-    "issuer_name": "CAPITAL ONE FINANCIAL CORP  (COF, COF-PI, COF-PJ, COF-PK, COF-PL, COF-PN)",
-    "issuer_cik": "0000927628",
-    "tickers": [
-      "COF",
-      "COF-PI",
-      "COF-PJ",
-      "COF-PK",
-      "COF-PL",
-      "COF-PN"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2020-09-11",
-    "url": "https://www.sec.gov/Archives/edgar/data/927628/000119312520244133/d53046d424b2.htm",
-    "search_score": 19.104307
-  },
-  {
-    "accession_number": "0001193125-16-773014",
-    "filename": "d478740d424b5.htm",
-    "issuer_name": "CAPITAL ONE FINANCIAL CORP  (COF, COF-PI, COF-PJ, COF-PK, COF-PL, COF-PN)",
-    "issuer_cik": "0000927628",
-    "tickers": [
-      "COF",
-      "COF-PI",
-      "COF-PJ",
-      "COF-PK",
-      "COF-PL",
-      "COF-PN"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2016-11-21",
-    "url": "https://www.sec.gov/Archives/edgar/data/927628/000119312516773014/d478740d424b5.htm",
-    "search_score": 19.103497
-  },
-  {
-    "accession_number": "0001193125-20-002619",
-    "filename": "d700338d424b5.htm",
-    "issuer_name": "METLIFE INC  (MET, MET-PA, MET-PE, MET-PF)",
-    "issuer_cik": "0001099219",
-    "tickers": [
-      "MET",
-      "MET-PA",
-      "MET-PE",
-      "MET-PF"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2020-01-07",
-    "url": "https://www.sec.gov/Archives/edgar/data/1099219/000119312520002619/d700338d424b5.htm",
-    "search_score": 24.410028
-  },
-  {
-    "accession_number": "0001193125-20-003865",
-    "filename": "d700338d424b5.htm",
-    "issuer_name": "METLIFE INC  (MET, MET-PA, MET-PE, MET-PF)",
-    "issuer_cik": "0001099219",
-    "tickers": [
-      "MET",
-      "MET-PA",
-      "MET-PE",
-      "MET-PF"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2020-01-08",
-    "url": "https://www.sec.gov/Archives/edgar/data/1099219/000119312520003865/d700338d424b5.htm",
-    "search_score": 24.387718
-  },
-  {
-    "accession_number": "0001193125-18-177763",
-    "filename": "d583906d424b5.htm",
-    "issuer_name": "METLIFE INC  (MET, MET-PA, MET-PE, MET-PF)",
-    "issuer_cik": "0001099219",
-    "tickers": [
-      "MET",
-      "MET-PA",
-      "MET-PE",
-      "MET-PF"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2018-05-30",
-    "url": "https://www.sec.gov/Archives/edgar/data/1099219/000119312518177763/d583906d424b5.htm",
-    "search_score": 24.347223
-  },
-  {
-    "accession_number": "0001193125-18-180782",
-    "filename": "d583906d424b5.htm",
-    "issuer_name": "METLIFE INC  (MET, MET-PA, MET-PE, MET-PF)",
-    "issuer_cik": "0001099219",
-    "tickers": [
-      "MET",
-      "MET-PA",
-      "MET-PE",
-      "MET-PF"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2018-06-01",
-    "url": "https://www.sec.gov/Archives/edgar/data/1099219/000119312518180782/d583906d424b5.htm",
-    "search_score": 24.339
-  },
-  {
-    "accession_number": "0001193125-24-154353",
-    "filename": "d793992d424b2.htm",
-    "issuer_name": "METLIFE INC  (MET, MET-PA, MET-PE, MET-PF)",
-    "issuer_cik": "0001099219",
-    "tickers": [
-      "MET",
-      "MET-PA",
-      "MET-PE",
-      "MET-PF"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2024-06-04",
-    "url": "https://www.sec.gov/Archives/edgar/data/1099219/000119312524154353/d793992d424b2.htm",
-    "search_score": 23.489338
-  },
-  {
-    "accession_number": "0001193125-18-239124",
-    "filename": "d588249d424b2.htm",
-    "issuer_name": "PRUDENTIAL FINANCIAL INC  (PFH, PRH, PRS, PRU)",
-    "issuer_cik": "0001137774",
-    "tickers": [
-      "PFH",
-      "PRH",
-      "PRS",
-      "PRU"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2018-08-06",
-    "url": "https://www.sec.gov/Archives/edgar/data/1137774/000119312518239124/d588249d424b2.htm",
-    "search_score": 22.76696
-  },
-  {
-    "accession_number": "0001193125-15-188283",
-    "filename": "d924561d424b2.htm",
-    "issuer_name": "PRUDENTIAL FINANCIAL INC  (PFH, PRH, PRS, PRU)",
-    "issuer_cik": "0001137774",
-    "tickers": [
-      "PFH",
-      "PRH",
-      "PRS",
-      "PRU"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2015-05-14",
-    "url": "https://www.sec.gov/Archives/edgar/data/1137774/000119312515188283/d924561d424b2.htm",
-    "search_score": 22.613543
-  },
-  {
-    "accession_number": "0001193125-18-272300",
-    "filename": "d614629d424b2.htm",
-    "issuer_name": "PRUDENTIAL FINANCIAL INC  (PFH, PRH, PRS, PRU)",
-    "issuer_cik": "0001137774",
-    "tickers": [
-      "PFH",
-      "PRH",
-      "PRS",
-      "PRU"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2018-09-13",
-    "url": "https://www.sec.gov/Archives/edgar/data/1137774/000119312518272300/d614629d424b2.htm",
-    "search_score": 22.59868
-  },
-  {
-    "accession_number": "0001193125-22-215702",
-    "filename": "d362247d424b2.htm",
-    "issuer_name": "PRUDENTIAL FINANCIAL INC  (PFH, PRH, PRS, PRU)",
-    "issuer_cik": "0001137774",
-    "tickers": [
-      "PFH",
-      "PRH",
-      "PRS",
-      "PRU"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2022-08-09",
-    "url": "https://www.sec.gov/Archives/edgar/data/1137774/000119312522215702/d362247d424b2.htm",
-    "search_score": 22.597416
-  },
-  {
-    "accession_number": "0001193125-18-274198",
-    "filename": "d614629d424b2.htm",
-    "issuer_name": "PRUDENTIAL FINANCIAL INC  (PFH, PRH, PRS, PRU)",
-    "issuer_cik": "0001137774",
-    "tickers": [
-      "PFH",
-      "PRH",
-      "PRS",
-      "PRU"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2018-09-14",
-    "url": "https://www.sec.gov/Archives/edgar/data/1137774/000119312518274198/d614629d424b2.htm",
-    "search_score": 22.587194
-  },
-  {
-    "accession_number": "0001047469-19-004479",
-    "filename": "a2239367z424b5.htm",
-    "issuer_name": "ALLSTATE CORP  (ALL, ALL-PB, ALL-PH, ALL-PI, ALL-PJ)",
-    "issuer_cik": "0000899051",
-    "tickers": [
-      "ALL",
-      "ALL-PB",
-      "ALL-PH",
-      "ALL-PI",
-      "ALL-PJ"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2019-08-01",
-    "url": "https://www.sec.gov/Archives/edgar/data/899051/000104746919004479/a2239367z424b5.htm",
-    "search_score": 24.269396
-  },
-  {
-    "accession_number": "0001047469-19-006085",
-    "filename": "a2240002z424b5.htm",
-    "issuer_name": "ALLSTATE CORP  (ALL, ALL-PB, ALL-PH, ALL-PI, ALL-PJ)",
-    "issuer_cik": "0000899051",
-    "tickers": [
-      "ALL",
-      "ALL-PB",
-      "ALL-PH",
-      "ALL-PI",
-      "ALL-PJ"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2019-11-05",
-    "url": "https://www.sec.gov/Archives/edgar/data/899051/000104746919006085/a2240002z424b5.htm",
-    "search_score": 24.267216
-  },
-  {
-    "accession_number": "0001047469-18-002124",
-    "filename": "a2235042z424b5.htm",
-    "issuer_name": "ALLSTATE CORP  (ALL, ALL-PB, ALL-PH, ALL-PI, ALL-PJ)",
-    "issuer_cik": "0000899051",
-    "tickers": [
-      "ALL",
-      "ALL-PB",
-      "ALL-PH",
-      "ALL-PI",
-      "ALL-PJ"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2018-03-26",
-    "url": "https://www.sec.gov/Archives/edgar/data/899051/000104746918002124/a2235042z424b5.htm",
-    "search_score": 24.254223
-  },
-  {
-    "accession_number": "0001047469-19-006040",
-    "filename": "a2239969z424b5.htm",
-    "issuer_name": "ALLSTATE CORP  (ALL, ALL-PB, ALL-PH, ALL-PI, ALL-PJ)",
-    "issuer_cik": "0000899051",
-    "tickers": [
-      "ALL",
-      "ALL-PB",
-      "ALL-PH",
-      "ALL-PI",
-      "ALL-PJ"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2019-11-04",
-    "url": "https://www.sec.gov/Archives/edgar/data/899051/000104746919006040/a2239969z424b5.htm",
-    "search_score": 24.249998
-  },
-  {
-    "accession_number": "0001047469-19-004521",
-    "filename": "a2239393z424b5.htm",
-    "issuer_name": "ALLSTATE CORP  (ALL, ALL-PB, ALL-PH, ALL-PI, ALL-PJ)",
-    "issuer_cik": "0000899051",
-    "tickers": [
-      "ALL",
-      "ALL-PB",
-      "ALL-PH",
-      "ALL-PI",
-      "ALL-PJ"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2019-08-02",
-    "url": "https://www.sec.gov/Archives/edgar/data/899051/000104746919004521/a2239393z424b5.htm",
-    "search_score": 24.216206
-  },
-  {
-    "accession_number": "0001193125-18-315716",
-    "filename": "d645291d424b2.htm",
-    "issuer_name": "HARTFORD FINANCIAL SERVICES GROUP INC/DE  (HIG, HIG-PG)",
-    "issuer_cik": "0000874766",
-    "tickers": [
-      "HIG",
-      "HIG-PG"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2018-11-01",
-    "url": "https://www.sec.gov/Archives/edgar/data/874766/000119312518315716/d645291d424b2.htm",
-    "search_score": 22.871977
-  },
-  {
-    "accession_number": "0001193125-18-311435",
-    "filename": "d645291d424b5.htm",
-    "issuer_name": "HARTFORD FINANCIAL SERVICES GROUP INC/DE  (HIG, HIG-PG)",
-    "issuer_cik": "0000874766",
-    "tickers": [
-      "HIG",
-      "HIG-PG"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2018-10-30",
-    "url": "https://www.sec.gov/Archives/edgar/data/874766/000119312518311435/d645291d424b5.htm",
-    "search_score": 22.782925
-  },
-  {
-    "accession_number": "0001193125-24-123948",
-    "filename": "d780069d424b5.htm",
-    "issuer_name": "HARTFORD FINANCIAL SERVICES GROUP, INC.  (HIG, HIG-PG)",
-    "issuer_cik": "0000874766",
-    "tickers": [
-      "HIG",
-      "HIG-PG"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2024-04-30",
-    "url": "https://www.sec.gov/Archives/edgar/data/874766/000119312524123948/d780069d424b5.htm",
-    "search_score": 22.556633
-  },
-  {
-    "accession_number": "0001193125-22-137744",
-    "filename": "d353241d424b5.htm",
-    "issuer_name": "HARTFORD FINANCIAL SERVICES GROUP, INC.  (HIG, HIG-PG)",
-    "issuer_cik": "0000874766",
-    "tickers": [
-      "HIG",
-      "HIG-PG"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2022-05-03",
-    "url": "https://www.sec.gov/Archives/edgar/data/874766/000119312522137744/d353241d424b5.htm",
-    "search_score": 22.541649
-  },
-  {
-    "accession_number": "0001193125-23-131380",
-    "filename": "d455184d424b5.htm",
-    "issuer_name": "HARTFORD FINANCIAL SERVICES GROUP, INC.  (HIG, HIG-PG)",
-    "issuer_cik": "0000874766",
-    "tickers": [
-      "HIG",
-      "HIG-PG"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2023-05-02",
-    "url": "https://www.sec.gov/Archives/edgar/data/874766/000119312523131380/d455184d424b5.htm",
-    "search_score": 22.526993
-  },
-  {
-    "accession_number": "0001193125-19-274765",
-    "filename": "d801704d424b5.htm",
-    "issuer_name": "PS BUSINESS PARKS INC/CA",
-    "issuer_cik": "0000866368",
-    "tickers": [
-      "CIK 0000866368"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2019-10-25",
-    "url": "https://www.sec.gov/Archives/edgar/data/866368/000119312519274765/d801704d424b5.htm",
-    "search_score": 20.51467
-  },
-  {
-    "accession_number": "0001193125-17-282356",
-    "filename": "d448034d424b5.htm",
-    "issuer_name": "PS BUSINESS PARKS INC/CA",
-    "issuer_cik": "0000866368",
-    "tickers": [
-      "CIK 0000866368"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2017-09-12",
-    "url": "https://www.sec.gov/Archives/edgar/data/866368/000119312517282356/d448034d424b5.htm",
-    "search_score": 20.505772
-  },
-  {
-    "accession_number": "0001193125-16-735125",
-    "filename": "d260720d424b5.htm",
-    "issuer_name": "PS BUSINESS PARKS INC/CA",
-    "issuer_cik": "0000866368",
-    "tickers": [
-      "CIK 0000866368"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2016-10-11",
-    "url": "https://www.sec.gov/Archives/edgar/data/866368/000119312516735125/d260720d424b5.htm",
-    "search_score": 20.505028
-  },
-  {
-    "accession_number": "0001193125-19-273201",
-    "filename": "d801704d424b5.htm",
-    "issuer_name": "PS BUSINESS PARKS INC/CA",
-    "issuer_cik": "0000866368",
-    "tickers": [
-      "CIK 0000866368"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2019-10-24",
-    "url": "https://www.sec.gov/Archives/edgar/data/866368/000119312519273201/d801704d424b5.htm",
-    "search_score": 20.487293
-  },
-  {
-    "accession_number": "0001193125-16-736868",
-    "filename": "d260720d424b5.htm",
-    "issuer_name": "PS BUSINESS PARKS INC/CA",
-    "issuer_cik": "0000866368",
-    "tickers": [
-      "CIK 0000866368"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2016-10-12",
-    "url": "https://www.sec.gov/Archives/edgar/data/866368/000119312516736868/d260720d424b5.htm",
-    "search_score": 20.457653
-  },
-  {
-    "accession_number": "0001193125-15-139217",
-    "filename": "d911312d424b5.htm",
-    "issuer_name": "Digital Realty Trust, Inc.  (DLR, DLR-PJ, DLR-PK, DLR-PL)",
-    "issuer_cik": "0001297996",
-    "tickers": [
-      "DLR",
-      "DLR-PJ",
-      "DLR-PK",
-      "DLR-PL"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2015-04-21",
-    "url": "https://www.sec.gov/Archives/edgar/data/1297996/000119312515139217/d911312d424b5.htm",
-    "search_score": 27.826666
-  },
-  {
-    "accession_number": "0001193125-15-226695",
-    "filename": "d943186d424b5.htm",
-    "issuer_name": "Digital Realty Trust, Inc.  (DLR, DLR-PJ, DLR-PK, DLR-PL)",
-    "issuer_cik": "0001297996",
-    "tickers": [
-      "DLR",
-      "DLR-PJ",
-      "DLR-PK",
-      "DLR-PL"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2015-06-18",
-    "url": "https://www.sec.gov/Archives/edgar/data/1297996/000119312515226695/d943186d424b5.htm",
-    "search_score": 27.79503
-  },
-  {
-    "accession_number": "0001193125-15-228986",
-    "filename": "d943186d424b2.htm",
-    "issuer_name": "Digital Realty Trust, L.P.",
-    "issuer_cik": "0001494877",
-    "tickers": [
-      "CIK 0001494877"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2015-06-19",
-    "url": "https://www.sec.gov/Archives/edgar/data/1494877/000119312515228986/d943186d424b2.htm",
-    "search_score": 27.744656
-  },
-  {
-    "accession_number": "0001193125-19-168760",
-    "filename": "d728078d424b5.htm",
-    "issuer_name": "DIGITAL REALTY TRUST, INC.  (DLR, DLR-PJ, DLR-PK, DLR-PL)",
-    "issuer_cik": "0001297996",
-    "tickers": [
-      "DLR",
-      "DLR-PJ",
-      "DLR-PK",
-      "DLR-PL"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2019-06-10",
-    "url": "https://www.sec.gov/Archives/edgar/data/1297996/000119312519168760/d728078d424b5.htm",
-    "search_score": 27.669888
-  },
-  {
-    "accession_number": "0001193125-19-171263",
-    "filename": "d728078d424b2.htm",
-    "issuer_name": "DIGITAL REALTY TRUST, INC.  (DLR, DLR-PJ, DLR-PK, DLR-PL)",
-    "issuer_cik": "0001297996",
-    "tickers": [
-      "DLR",
-      "DLR-PJ",
-      "DLR-PK",
-      "DLR-PL"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2019-06-12",
-    "url": "https://www.sec.gov/Archives/edgar/data/1297996/000119312519171263/d728078d424b2.htm",
-    "search_score": 27.635101
-  },
-  {
-    "accession_number": "0001047469-20-005553",
-    "filename": "a2242668z424b2.htm",
-    "issuer_name": "SIMON PROPERTY GROUP INC /DE/  (SPG, SPG-PJ)",
-    "issuer_cik": "0001063761",
-    "tickers": [
-      "SPG",
-      "SPG-PJ"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2020-11-19",
-    "url": "https://www.sec.gov/Archives/edgar/data/1063761/000104746920005553/a2242668z424b2.htm",
-    "search_score": 24.837034
-  },
-  {
-    "accession_number": "0001047469-20-005523",
-    "filename": "a2242643z424b5.htm",
-    "issuer_name": "SIMON PROPERTY GROUP INC /DE/  (SPG, SPG-PJ)",
-    "issuer_cik": "0001063761",
-    "tickers": [
-      "SPG",
-      "SPG-PJ"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2020-11-18",
-    "url": "https://www.sec.gov/Archives/edgar/data/1063761/000104746920005523/a2242643z424b5.htm",
-    "search_score": 24.819817
-  },
-  {
-    "accession_number": "0001144204-15-002278",
-    "filename": "v398717_424b5.htm",
-    "issuer_name": "Bluerock Residential Growth REIT, Inc.",
-    "issuer_cik": "0001442626",
-    "tickers": [
-      "CIK 0001442626"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2015-01-14",
-    "url": "https://www.sec.gov/Archives/edgar/data/1442626/000114420415002278/v398717_424b5.htm",
-    "search_score": 12.705652
-  },
-  {
-    "accession_number": "0001144204-15-001812",
-    "filename": "v397190_424b5.htm",
-    "issuer_name": "Bluerock Residential Growth REIT, Inc.",
-    "issuer_cik": "0001442626",
-    "tickers": [
-      "CIK 0001442626"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2015-01-12",
-    "url": "https://www.sec.gov/Archives/edgar/data/1442626/000114420415001812/v397190_424b5.htm",
-    "search_score": 12.649124
-  },
-  {
-    "accession_number": "0001564590-19-008877",
-    "filename": "gs-424b2.htm",
-    "issuer_name": "GOLDMAN SACHS GROUP INC  (GS, GSCE, GS-PA, GS-PC, GS-PD)",
-    "issuer_cik": "0000886982",
-    "tickers": [
-      "GS",
-      "GSCE",
-      "GS-PA",
-      "GS-PC",
-      "GS-PD"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2019-03-22",
-    "url": "https://www.sec.gov/Archives/edgar/data/886982/000156459019008877/gs-424b2.htm",
-    "search_score": 9.150476
-  },
-  {
-    "accession_number": "0001047469-20-005544",
-    "filename": "a2242665z424b5.htm",
-    "issuer_name": "VORNADO REALTY TRUST  (VNO, VNORP, VNO-PL, VNO-PM, VNO-PN, VNO-PO)",
-    "issuer_cik": "0000899689",
-    "tickers": [
-      "VNO",
-      "VNORP",
-      "VNO-PL",
-      "VNO-PM",
-      "VNO-PN",
-      "VNO-PO"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2020-11-19",
-    "url": "https://www.sec.gov/Archives/edgar/data/899689/000104746920005544/a2242665z424b5.htm",
-    "search_score": 30.989506
-  },
-  {
-    "accession_number": "0001047469-20-005570",
-    "filename": "a2242672z424b5.htm",
-    "issuer_name": "VORNADO REALTY TRUST  (VNO, VNORP, VNO-PL, VNO-PM, VNO-PN, VNO-PO)",
-    "issuer_cik": "0000899689",
-    "tickers": [
-      "VNO",
-      "VNORP",
-      "VNO-PL",
-      "VNO-PM",
-      "VNO-PN",
-      "VNO-PO"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2020-11-23",
-    "url": "https://www.sec.gov/Archives/edgar/data/899689/000104746920005570/a2242672z424b5.htm",
-    "search_score": 30.88217
-  },
-  {
-    "accession_number": "0001047469-17-007620",
-    "filename": "a2234038z424b5.htm",
-    "issuer_name": "VORNADO REALTY LP",
-    "issuer_cik": "0001040765",
-    "tickers": [
-      "CIK 0001040765"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2017-12-12",
-    "url": "https://www.sec.gov/Archives/edgar/data/1040765/000104746917007620/a2234038z424b5.htm",
-    "search_score": 30.84358
-  },
-  {
-    "accession_number": "0001047469-17-007679",
-    "filename": "a2234038z424b5.htm",
-    "issuer_name": "VORNADO REALTY LP",
-    "issuer_cik": "0001040765",
-    "tickers": [
-      "CIK 0001040765"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2017-12-14",
-    "url": "https://www.sec.gov/Archives/edgar/data/1040765/000104746917007679/a2234038z424b5.htm",
-    "search_score": 30.820843
-  },
-  {
-    "accession_number": "0001104659-21-115953",
-    "filename": "tm2127186-2_424b5.htm",
-    "issuer_name": "VORNADO REALTY TRUST  (VNO, VNORP, VNO-PL, VNO-PM, VNO-PN, VNO-PO)",
-    "issuer_cik": "0000899689",
-    "tickers": [
-      "VNO",
-      "VNORP",
-      "VNO-PL",
-      "VNO-PM",
-      "VNO-PN",
-      "VNO-PO"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2021-09-15",
-    "url": "https://www.sec.gov/Archives/edgar/data/899689/000110465921115953/tm2127186-2_424b5.htm",
-    "search_score": 30.791647
-  },
-  {
-    "accession_number": "0001047469-19-001572",
-    "filename": "a2238183z424b5.htm",
-    "issuer_name": "Duke Energy CORP  (DUK, DUKB, DUKH, DUK-PA)",
-    "issuer_cik": "0001326160",
-    "tickers": [
-      "DUK",
-      "DUKB",
-      "DUKH",
-      "DUK-PA"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2019-03-25",
-    "url": "https://www.sec.gov/Archives/edgar/data/1326160/000104746919001572/a2238183z424b5.htm",
-    "search_score": 28.405405
-  },
-  {
-    "accession_number": "0001047469-19-001620",
-    "filename": "a2238219z424b5.htm",
-    "issuer_name": "Duke Energy CORP  (DUK, DUKB, DUKH, DUK-PA)",
-    "issuer_cik": "0001326160",
-    "tickers": [
-      "DUK",
-      "DUKB",
-      "DUKH",
-      "DUK-PA"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2019-03-26",
-    "url": "https://www.sec.gov/Archives/edgar/data/1326160/000104746919001620/a2238219z424b5.htm",
-    "search_score": 28.385796
-  },
-  {
-    "accession_number": "0001104659-22-117156",
-    "filename": "tm2229710-1_424b5.htm",
-    "issuer_name": "Duke Energy CORP  (DUK, DUKB, DUKH, DUK-PA)",
-    "issuer_cik": "0001326160",
-    "tickers": [
-      "DUK",
-      "DUKB",
-      "DUKH",
-      "DUK-PA"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2022-11-10",
-    "url": "https://www.sec.gov/Archives/edgar/data/1326160/000110465922117156/tm2229710-1_424b5.htm",
-    "search_score": 27.228682
-  },
-  {
-    "accession_number": "0001047469-19-006191",
-    "filename": "a2239961z424b5.htm",
-    "issuer_name": "Duke Energy CORP  (DUK, DUKB, DUKH, DUK-PA)",
-    "issuer_cik": "0001326160",
-    "tickers": [
-      "DUK",
-      "DUKB",
-      "DUKH",
-      "DUK-PA"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2019-11-08",
-    "url": "https://www.sec.gov/Archives/edgar/data/1326160/000104746919006191/a2239961z424b5.htm",
-    "search_score": 27.156803
-  },
-  {
-    "accession_number": "0001047469-20-003060",
-    "filename": "a2241643z424b5.htm",
-    "issuer_name": "Duke Energy CORP  (DUK, DUKB, DUKH, DUK-PA)",
-    "issuer_cik": "0001326160",
-    "tickers": [
-      "DUK",
-      "DUKB",
-      "DUKH",
-      "DUK-PA"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2020-05-14",
-    "url": "https://www.sec.gov/Archives/edgar/data/1326160/000104746920003060/a2241643z424b5.htm",
-    "search_score": 26.841301
-  },
-  {
-    "accession_number": "0001193125-18-116143",
-    "filename": "d559727d424b5.htm",
-    "issuer_name": "American Water Works Company, Inc.  (AWK)",
-    "issuer_cik": "0001410636",
-    "tickers": [
-      "AWK"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2018-04-13",
-    "url": "https://www.sec.gov/Archives/edgar/data/1410636/000119312518116143/d559727d424b5.htm",
-    "search_score": 17.5438
-  },
-  {
-    "accession_number": "0001193125-18-114313",
-    "filename": "d559727d424b5.htm",
-    "issuer_name": "American Water Works Company, Inc.  (AWK)",
-    "issuer_cik": "0001410636",
-    "tickers": [
-      "AWK"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2018-04-11",
-    "url": "https://www.sec.gov/Archives/edgar/data/1410636/000119312518114313/d559727d424b5.htm",
-    "search_score": 17.515818
-  },
-  {
-    "accession_number": "0000066904-18-000002",
-    "filename": "ms2018asrnotepre424.htm",
-    "issuer_name": "MISSISSIPPI POWER CO",
-    "issuer_cik": "0000066904",
-    "tickers": [
-      "CIK 0000066904"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2018-03-22",
-    "url": "https://www.sec.gov/Archives/edgar/data/66904/000006690418000002/ms2018asrnotepre424.htm",
-    "search_score": 16.841927
-  },
-  {
-    "accession_number": "0000066904-18-000010",
-    "filename": "ms2018asrnotefinal424.htm",
-    "issuer_name": "MISSISSIPPI POWER CO",
-    "issuer_cik": "0000066904",
-    "tickers": [
-      "CIK 0000066904"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2018-03-23",
-    "url": "https://www.sec.gov/Archives/edgar/data/66904/000006690418000010/ms2018asrnotefinal424.htm",
-    "search_score": 16.821365
-  },
-  {
-    "accession_number": "0000066904-18-000004",
-    "filename": "ms2018bsrnotepre424.htm",
-    "issuer_name": "MISSISSIPPI POWER CO",
-    "issuer_cik": "0000066904",
-    "tickers": [
-      "CIK 0000066904"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2018-03-22",
-    "url": "https://www.sec.gov/Archives/edgar/data/66904/000006690418000004/ms2018bsrnotepre424.htm",
-    "search_score": 16.80805
-  },
-  {
-    "accession_number": "0001104659-21-148052",
-    "filename": "tm2134779-3_424b2.htm",
-    "issuer_name": "NEXTERA ENERGY CAPITAL HOLDINGS INC",
-    "issuer_cik": "0000794447",
-    "tickers": [
-      "CIK 0000794447"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2021-12-09",
-    "url": "https://www.sec.gov/Archives/edgar/data/794447/000110465921148052/tm2134779-3_424b2.htm",
-    "search_score": 25.7029
-  },
-  {
-    "accession_number": "0001104659-21-076422",
-    "filename": "tm2117991-3_424b2.htm",
-    "issuer_name": "NEXTERA ENERGY CAPITAL HOLDINGS INC",
-    "issuer_cik": "0000794447",
-    "tickers": [
-      "CIK 0000794447"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2021-06-03",
-    "url": "https://www.sec.gov/Archives/edgar/data/794447/000110465921076422/tm2117991-3_424b2.htm",
-    "search_score": 25.331287
-  },
-  {
-    "accession_number": "0001193125-25-338333",
-    "filename": "d85786d424b5.htm",
-    "issuer_name": "NEXTERA ENERGY INC  (NEE, NEE-PN, NEE-PS, NEE-PT, NEE-PU)",
-    "issuer_cik": "0000753308",
-    "tickers": [
-      "NEE",
-      "NEE-PN",
-      "NEE-PS",
-      "NEE-PT",
-      "NEE-PU"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2025-12-31",
-    "url": "https://www.sec.gov/Archives/edgar/data/753308/000119312525338333/d85786d424b5.htm",
-    "search_score": 25.327087
-  },
-  {
-    "accession_number": "0001104659-21-131057",
-    "filename": "tm2131064-3_424b2.htm",
-    "issuer_name": "NEXTERA ENERGY CAPITAL HOLDINGS INC",
-    "issuer_cik": "0000794447",
-    "tickers": [
-      "CIK 0000794447"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2021-10-28",
-    "url": "https://www.sec.gov/Archives/edgar/data/794447/000110465921131057/tm2131064-3_424b2.htm",
-    "search_score": 25.25844
-  },
-  {
-    "accession_number": "0001193125-23-025006",
-    "filename": "d460772d424b5.htm",
-    "issuer_name": "NEXTERA ENERGY CAPITAL HOLDINGS INC",
-    "issuer_cik": "0000794447",
-    "tickers": [
-      "CIK 0000794447"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2023-02-06",
-    "url": "https://www.sec.gov/Archives/edgar/data/794447/000119312523025006/d460772d424b5.htm",
-    "search_score": 25.105263
-  },
-  {
-    "accession_number": "0001193125-22-086691",
-    "filename": "d318037d424b5.htm",
-    "issuer_name": "Southwest Gas Holdings, Inc.  (SWX)",
-    "issuer_cik": "0001692115",
-    "tickers": [
-      "SWX"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2022-03-28",
-    "url": "https://www.sec.gov/Archives/edgar/data/1692115/000119312522086691/d318037d424b5.htm",
-    "search_score": 20.48373
-  },
-  {
-    "accession_number": "0001193125-22-088189",
-    "filename": "d318037d424b5.htm",
-    "issuer_name": "Southwest Gas Holdings, Inc.  (SWX)",
-    "issuer_cik": "0001692115",
-    "tickers": [
-      "SWX"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2022-03-29",
-    "url": "https://www.sec.gov/Archives/edgar/data/1692115/000119312522088189/d318037d424b5.htm",
-    "search_score": 20.467234
-  },
-  {
-    "accession_number": "0001193125-22-293931",
-    "filename": "d411841d424b5.htm",
-    "issuer_name": "SOUTHWEST GAS CORP",
-    "issuer_cik": "0000092416",
-    "tickers": [
-      "CIK 0000092416"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2022-11-29",
-    "url": "https://www.sec.gov/Archives/edgar/data/92416/000119312522293931/d411841d424b5.htm",
-    "search_score": 16.433874
-  },
-  {
-    "accession_number": "0001193125-22-079533",
-    "filename": "d330065d424b5.htm",
-    "issuer_name": "SOUTHWEST GAS CORP",
-    "issuer_cik": "0000092416",
-    "tickers": [
-      "CIK 0000092416"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2022-03-18",
-    "url": "https://www.sec.gov/Archives/edgar/data/92416/000119312522079533/d330065d424b5.htm",
-    "search_score": 16.425514
-  },
-  {
-    "accession_number": "0001193125-22-295402",
-    "filename": "d411841d424b5.htm",
-    "issuer_name": "SOUTHWEST GAS CORP",
-    "issuer_cik": "0000092416",
-    "tickers": [
-      "CIK 0000092416"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2022-11-30",
-    "url": "https://www.sec.gov/Archives/edgar/data/92416/000119312522295402/d411841d424b5.htm",
-    "search_score": 16.40274
-  },
-  {
-    "accession_number": "0001193125-19-308619",
-    "filename": "d815423d424b2.htm",
-    "issuer_name": "AT&T INC.  (T, TBB, TBC, T-PA, T-PC)",
-    "issuer_cik": "0000732717",
-    "tickers": [
-      "T",
-      "TBB",
-      "TBC",
-      "T-PA",
-      "T-PC"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2019-12-09",
-    "url": "https://www.sec.gov/Archives/edgar/data/732717/000119312519308619/d815423d424b2.htm",
-    "search_score": 19.85041
-  },
-  {
-    "accession_number": "0001193125-20-032375",
-    "filename": "d840947d424b5.htm",
-    "issuer_name": "AT&T INC.  (T, TBB, TBC, T-PA, T-PC)",
-    "issuer_cik": "0000732717",
-    "tickers": [
-      "T",
-      "TBB",
-      "TBC",
-      "T-PA",
-      "T-PC"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2020-02-12",
-    "url": "https://www.sec.gov/Archives/edgar/data/732717/000119312520032375/d840947d424b5.htm",
-    "search_score": 19.803316
-  },
-  {
-    "accession_number": "0001193125-19-306837",
-    "filename": "d815423d424b5.htm",
-    "issuer_name": "AT&T INC.  (T, TBB, TBC, T-PA, T-PC)",
-    "issuer_cik": "0000732717",
-    "tickers": [
-      "T",
-      "TBB",
-      "TBC",
-      "T-PA",
-      "T-PC"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2019-12-05",
-    "url": "https://www.sec.gov/Archives/edgar/data/732717/000119312519306837/d815423d424b5.htm",
-    "search_score": 19.797415
-  },
-  {
-    "accession_number": "0001193125-20-036498",
-    "filename": "d840947d424b2.htm",
-    "issuer_name": "AT&T INC.  (T, TBB, TBC, T-PA, T-PC)",
-    "issuer_cik": "0000732717",
-    "tickers": [
-      "T",
-      "TBB",
-      "TBC",
-      "T-PA",
-      "T-PC"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2020-02-14",
-    "url": "https://www.sec.gov/Archives/edgar/data/732717/000119312520036498/d840947d424b2.htm",
-    "search_score": 19.723103
-  },
-  {
-    "accession_number": "0000732717-15-000036",
-    "filename": "prosupp.htm",
-    "issuer_name": "AT&T INC.  (T, TBB, TBC, T-PA, T-PC)",
-    "issuer_cik": "0000732717",
-    "tickers": [
-      "T",
-      "TBB",
-      "TBC",
-      "T-PA",
-      "T-PC"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2015-05-04",
-    "url": "https://www.sec.gov/Archives/edgar/data/732717/000073271715000036/prosupp.htm",
-    "search_score": 19.670757
-  },
-  {
-    "accession_number": "0001193125-20-181017",
-    "filename": "d913030d424b2.htm",
-    "issuer_name": "SEMPRA ENERGY  (SRE, SREA)",
-    "issuer_cik": "0001032208",
-    "tickers": [
-      "SRE",
-      "SREA"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2020-06-26",
-    "url": "https://www.sec.gov/Archives/edgar/data/1032208/000119312520181017/d913030d424b2.htm",
-    "search_score": 25.263212
-  },
-  {
-    "accession_number": "0001193125-22-080118",
-    "filename": "d254294d424b5.htm",
-    "issuer_name": "SEMPRA ENERGY  (SRE, SREA)",
-    "issuer_cik": "0001032208",
-    "tickers": [
-      "SRE",
-      "SREA"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2022-03-21",
-    "url": "https://www.sec.gov/Archives/edgar/data/1032208/000119312522080118/d254294d424b5.htm",
-    "search_score": 24.463814
-  },
-  {
-    "accession_number": "0001193125-22-081690",
-    "filename": "d254294d424b2.htm",
-    "issuer_name": "SEMPRA ENERGY  (SRE, SREA)",
-    "issuer_cik": "0001032208",
-    "tickers": [
-      "SRE",
-      "SREA"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2022-03-22",
-    "url": "https://www.sec.gov/Archives/edgar/data/1032208/000119312522081690/d254294d424b2.htm",
-    "search_score": 24.401083
-  },
-  {
-    "accession_number": "0001193125-20-240596",
-    "filename": "d36850d424b5.htm",
-    "issuer_name": "SEMPRA ENERGY  (SRE, SREA)",
-    "issuer_cik": "0001032208",
-    "tickers": [
-      "SRE",
-      "SREA"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2020-09-08",
-    "url": "https://www.sec.gov/Archives/edgar/data/1032208/000119312520240596/d36850d424b5.htm",
-    "search_score": 24.25328
-  },
-  {
-    "accession_number": "0001193125-21-331182",
-    "filename": "d244835d424b2.htm",
-    "issuer_name": "SEMPRA ENERGY  (SRE, SREA)",
-    "issuer_cik": "0001032208",
-    "tickers": [
-      "SRE",
-      "SREA"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2021-11-16",
-    "url": "https://www.sec.gov/Archives/edgar/data/1032208/000119312521331182/d244835d424b2.htm",
-    "search_score": 23.736343
-  },
-  {
-    "accession_number": "0001193125-18-285695",
-    "filename": "d623774d424b2.htm",
-    "issuer_name": "CENTERPOINT ENERGY INC  (CNP)",
-    "issuer_cik": "0001130310",
-    "tickers": [
-      "CNP"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2018-09-27",
-    "url": "https://www.sec.gov/Archives/edgar/data/1130310/000119312518285695/d623774d424b2.htm",
-    "search_score": 29.711195
-  },
-  {
-    "accession_number": "0001193125-18-281173",
-    "filename": "d623774d424b5.htm",
-    "issuer_name": "CENTERPOINT ENERGY INC  (CNP)",
-    "issuer_cik": "0001130310",
-    "tickers": [
-      "CNP"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2018-09-24",
-    "url": "https://www.sec.gov/Archives/edgar/data/1130310/000119312518281173/d623774d424b5.htm",
-    "search_score": 29.69836
-  },
-  {
-    "accession_number": "0001193125-18-281167",
-    "filename": "d622216d424b5.htm",
-    "issuer_name": "CENTERPOINT ENERGY INC  (CNP)",
-    "issuer_cik": "0001130310",
-    "tickers": [
-      "CNP"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2018-09-24",
-    "url": "https://www.sec.gov/Archives/edgar/data/1130310/000119312518281167/d622216d424b5.htm",
-    "search_score": 29.4909
-  },
-  {
-    "accession_number": "0001193125-18-285710",
-    "filename": "d622216d424b2.htm",
-    "issuer_name": "CENTERPOINT ENERGY INC  (CNP)",
-    "issuer_cik": "0001130310",
-    "tickers": [
-      "CNP"
-    ],
-    "form_type": "424B2",
-    "filing_date": "2018-09-27",
-    "url": "https://www.sec.gov/Archives/edgar/data/1130310/000119312518285710/d622216d424b2.htm",
-    "search_score": 29.410316
-  },
-  {
-    "accession_number": "0001193125-18-291463",
-    "filename": "d621088d424b5.htm",
-    "issuer_name": "CENTERPOINT ENERGY INC  (CNP)",
-    "issuer_cik": "0001130310",
-    "tickers": [
-      "CNP"
-    ],
-    "form_type": "424B5",
-    "filing_date": "2018-10-03",
-    "url": "https://www.sec.gov/Archives/edgar/data/1130310/000119312518291463/d621088d424b5.htm",
-    "search_score": 28.697227
+{
+  "metadata": {
+    "description": "Curated reference database of preferred equity securities",
+    "generated": "2026-03-17 22:56:09",
+    "total_securities": 65,
+    "sources": [
+      "iShares PFF ETF holdings (BlackRock)",
+      "Yahoo Finance preferred ticker scan",
+      "SEC EDGAR prospectus cache"
+    ]
+  },
+  "securities": {
+    "ALB-PA": {
+      "yahoo_ticker": "ALB-PA",
+      "parent_ticker": "ALB",
+      "security_name": "Albemarle Corporation",
+      "last_known_price": 67.27,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": true,
+      "source": "yahoo_finance_scan",
+      "pff_weight": 1.59,
+      "pff_name": "ALBEMARLE CORP"
+    },
+    "ALL-PB": {
+      "yahoo_ticker": "ALL-PB",
+      "parent_ticker": "ALL",
+      "security_name": "The Allstate Corporation",
+      "last_known_price": 26.18,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": false,
+      "source": "yahoo_finance_scan"
+    },
+    "ALL-PH": {
+      "yahoo_ticker": "ALL-PH",
+      "parent_ticker": "ALL",
+      "security_name": "The Allstate Corporation",
+      "last_known_price": 20.8,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": true,
+      "source": "yahoo_finance_scan",
+      "pff_weight": 0.5,
+      "pff_name": "ALLSTATE CORPORATION (THE)"
+    },
+    "ALL-PI": {
+      "yahoo_ticker": "ALL-PI",
+      "parent_ticker": "ALL",
+      "security_name": "The Allstate Corporation",
+      "last_known_price": 19.36,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": false,
+      "source": "yahoo_finance_scan"
+    },
+    "ALL-PJ": {
+      "yahoo_ticker": "ALL-PJ",
+      "parent_ticker": "ALL",
+      "security_name": "The Allstate Corporation",
+      "last_known_price": 26.33,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": false,
+      "source": "yahoo_finance_scan"
+    },
+    "APO-PA": {
+      "yahoo_ticker": "APO-PA",
+      "parent_ticker": "APO",
+      "security_name": "Apollo Global Management, Inc.",
+      "last_known_price": 57.56,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": false,
+      "source": "yahoo_finance_scan"
+    },
+    "ARES-PB": {
+      "yahoo_ticker": "ARES-PB",
+      "parent_ticker": "ARES",
+      "security_name": "Ares Management Corp",
+      "last_known_price": 35.55,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": false,
+      "source": "yahoo_finance_scan"
+    },
+    "ATH-PA": {
+      "yahoo_ticker": "ATH-PA",
+      "parent_ticker": "ATH",
+      "security_name": "Athene Holding Ltd.",
+      "last_known_price": 23.69,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": true,
+      "source": "yahoo_finance_scan",
+      "pff_weight": 0.43,
+      "pff_name": "ATHENE HOLDING DS REPRESENTING P"
+    },
+    "ATH-PB": {
+      "yahoo_ticker": "ATH-PB",
+      "parent_ticker": "ATH",
+      "security_name": "Athene Holding Ltd.",
+      "last_known_price": 18.7,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": false,
+      "source": "yahoo_finance_scan"
+    },
+    "ATH-PD": {
+      "yahoo_ticker": "ATH-PD",
+      "parent_ticker": "ATH",
+      "security_name": "Athene Holding Ltd.",
+      "last_known_price": 16.45,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": false,
+      "source": "yahoo_finance_scan"
+    },
+    "ATH-PE": {
+      "yahoo_ticker": "ATH-PE",
+      "parent_ticker": "ATH",
+      "security_name": "Athene Holding Ltd.",
+      "last_known_price": 25.18,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": false,
+      "source": "yahoo_finance_scan"
+    },
+    "BAC-PB": {
+      "yahoo_ticker": "BAC-PB",
+      "parent_ticker": "BAC",
+      "security_name": "Bank of America Corporation",
+      "last_known_price": 25.0,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": true,
+      "source": "yahoo_finance_scan",
+      "pff_weight": 0.48,
+      "pff_name": "BANK OF AMERICA CORP"
+    },
+    "BAC-PE": {
+      "yahoo_ticker": "BAC-PE",
+      "parent_ticker": "BAC",
+      "security_name": "Bank of America Corporation",
+      "last_known_price": 19.33,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": false,
+      "source": "yahoo_finance_scan"
+    },
+    "BAC-PK": {
+      "yahoo_ticker": "BAC-PK",
+      "parent_ticker": "BAC",
+      "security_name": "Bank of America Corporation",
+      "last_known_price": 24.79,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": false,
+      "source": "yahoo_finance_scan"
+    },
+    "BAC-PL": {
+      "yahoo_ticker": "BAC-PL",
+      "parent_ticker": "BAC",
+      "security_name": "7.25% Non-Cumulative Perpetual Convertible Preferred Stock, Series L",
+      "issuer": "Bank of America Corporation",
+      "coupon_type": "fixed",
+      "coupon_rate": 7.25,
+      "par_value": 1000.0,
+      "cumulative": false,
+      "last_known_price": null,
+      "exchange": "NYSE",
+      "status": "active",
+      "in_pff": false,
+      "has_prospectus_cache": true,
+      "source": "demo_cache"
+    },
+    "BAC-PM": {
+      "yahoo_ticker": "BAC-PM",
+      "parent_ticker": "BAC",
+      "security_name": "Bank of America Corporation",
+      "last_known_price": 22.07,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": true,
+      "source": "yahoo_finance_scan",
+      "pff_weight": 0.39,
+      "pff_name": "BANK OF AMERICA CORPORATION DEPOSI"
+    },
+    "BAC-PO": {
+      "yahoo_ticker": "BAC-PO",
+      "parent_ticker": "BAC",
+      "security_name": "Bank of America Corporation",
+      "last_known_price": 17.9,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": false,
+      "source": "yahoo_finance_scan"
+    },
+    "BAC-PP": {
+      "yahoo_ticker": "BAC-PP",
+      "parent_ticker": "BAC",
+      "security_name": "Bank of America Corporation",
+      "last_known_price": 17.0,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": false,
+      "source": "yahoo_finance_scan"
+    },
+    "C-PE": {
+      "yahoo_ticker": "C-PE",
+      "parent_ticker": "C",
+      "security_name": "",
+      "last_known_price": 25.19,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": false,
+      "source": "yahoo_finance_scan"
+    },
+    "C-PN": {
+      "yahoo_ticker": "C-PN",
+      "parent_ticker": "C",
+      "security_name": "Citigroup Capital XIII TR PFD SECS",
+      "last_known_price": 29.65,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": true,
+      "source": "yahoo_finance_scan",
+      "pff_weight": 1.4,
+      "pff_name": "CITIGROUP CAPITAL XIII",
+      "has_prospectus_cache": true,
+      "issuer": "Citigroup Capital XIII",
+      "coupon_type": "fixed-to-floating",
+      "coupon_rate": 7.875,
+      "par_value": 25.0,
+      "cumulative": false
+    },
+    "C-PQ": {
+      "yahoo_ticker": "C-PQ",
+      "parent_ticker": "C",
+      "security_name": "",
+      "last_known_price": 25.12,
+      "exchange": "YHD",
+      "status": "active",
+      "in_pff": false,
+      "source": "yahoo_finance_scan"
+    },
+    "C-PR": {
+      "yahoo_ticker": "C-PR",
+      "parent_ticker": "C",
+      "security_name": "Citigroup Inc.",
+      "last_known_price": 25.05,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": true,
+      "source": "yahoo_finance_scan",
+      "pff_weight": 0.42,
+      "pff_name": "CITIGROUP INC"
+    },
+    "COF-PI": {
+      "yahoo_ticker": "COF-PI",
+      "parent_ticker": "COF",
+      "security_name": "Capital One Financial Corporation",
+      "last_known_price": 19.22,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": true,
+      "source": "yahoo_finance_scan",
+      "pff_weight": 0.6,
+      "pff_name": "CAPITAL ONE FINANCIAL CORPORATION"
+    },
+    "COF-PJ": {
+      "yahoo_ticker": "COF-PJ",
+      "parent_ticker": "COF",
+      "security_name": "Capital One Financial Corporation",
+      "last_known_price": 18.24,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": true,
+      "source": "yahoo_finance_scan",
+      "pff_weight": 0.48,
+      "pff_name": "CAPITAL ONE FINANCIAL CORPORATION"
+    },
+    "COF-PK": {
+      "yahoo_ticker": "COF-PK",
+      "parent_ticker": "COF",
+      "security_name": "Capital One Financial Corporation",
+      "last_known_price": 17.75,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": false,
+      "source": "yahoo_finance_scan"
+    },
+    "COF-PL": {
+      "yahoo_ticker": "COF-PL",
+      "parent_ticker": "COF",
+      "security_name": "Capital One Financial Corporation",
+      "last_known_price": 16.81,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": false,
+      "source": "yahoo_finance_scan"
+    },
+    "COF-PN": {
+      "yahoo_ticker": "COF-PN",
+      "parent_ticker": "COF",
+      "security_name": "Capital One Financial Corporation",
+      "last_known_price": 16.19,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": false,
+      "source": "yahoo_finance_scan"
+    },
+    "GS-PC": {
+      "yahoo_ticker": "GS-PC",
+      "parent_ticker": "GS",
+      "security_name": "The Goldman Sachs Group, Inc. PFD 1/1000 C",
+      "last_known_price": 19.63,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": false,
+      "source": "yahoo_finance_scan"
+    },
+    "GS-PD": {
+      "yahoo_ticker": "GS-PD",
+      "parent_ticker": "GS",
+      "security_name": "The Goldman Sachs Group, Inc.",
+      "last_known_price": 19.46,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": true,
+      "source": "yahoo_finance_scan",
+      "pff_weight": 0.55,
+      "pff_name": "GOLDMAN SACHS GROUP INC",
+      "has_prospectus_cache": true,
+      "issuer": "The Goldman Sachs Group, Inc.",
+      "coupon_type": "floating",
+      "coupon_rate": 4.0,
+      "par_value": 25000.0,
+      "cumulative": false
+    },
+    "HPE-PC": {
+      "yahoo_ticker": "HPE-PC",
+      "parent_ticker": "HPE",
+      "security_name": "",
+      "last_known_price": 59.72,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": true,
+      "source": "yahoo_finance_scan",
+      "pff_weight": 0.95,
+      "pff_name": "HEWLETT PACKARD ENTERPRISE CONV PR"
+    },
+    "JPM-PD": {
+      "yahoo_ticker": "JPM-PD",
+      "parent_ticker": "JPM",
+      "security_name": "JPMorgan Chase & Co.",
+      "last_known_price": 24.71,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": true,
+      "source": "yahoo_finance_scan",
+      "pff_weight": 0.88,
+      "pff_name": "JPMORGAN CHASE & CO",
+      "has_prospectus_cache": true,
+      "issuer": "JPMorgan Chase & Co.",
+      "coupon_type": "fixed",
+      "coupon_rate": 5.75,
+      "par_value": 10000.0,
+      "cumulative": false
+    },
+    "JPM-PJ": {
+      "yahoo_ticker": "JPM-PJ",
+      "parent_ticker": "JPM",
+      "security_name": "JPMorgan Chase & Co.",
+      "last_known_price": 19.88,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": true,
+      "source": "yahoo_finance_scan",
+      "pff_weight": 0.6,
+      "pff_name": "JPMORGAN CHASE DRC",
+      "has_prospectus_cache": true,
+      "issuer": "JPMorgan Chase & Co.",
+      "coupon_type": "fixed",
+      "coupon_rate": 4.75,
+      "par_value": 10000.0,
+      "cumulative": false
+    },
+    "JPM-PM": {
+      "yahoo_ticker": "JPM-PM",
+      "parent_ticker": "JPM",
+      "security_name": "JPMorgan Chase & Co.",
+      "last_known_price": 17.95,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": true,
+      "source": "yahoo_finance_scan",
+      "pff_weight": 0.76,
+      "pff_name": "JPMORGAN CHASE AND CO DS REPSTG T"
+    },
+    "MET-PA": {
+      "yahoo_ticker": "MET-PA",
+      "parent_ticker": "MET",
+      "security_name": "MetLife, Inc.",
+      "last_known_price": 21.49,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": false,
+      "source": "yahoo_finance_scan"
+    },
+    "MET-PE": {
+      "yahoo_ticker": "MET-PE",
+      "parent_ticker": "MET",
+      "security_name": "MetLife, Inc.",
+      "last_known_price": 23.16,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": true,
+      "source": "yahoo_finance_scan",
+      "pff_weight": 0.39,
+      "pff_name": "METLIFE INC"
+    },
+    "MET-PF": {
+      "yahoo_ticker": "MET-PF",
+      "parent_ticker": "MET",
+      "security_name": "MetLife, Inc.",
+      "last_known_price": 19.05,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": true,
+      "source": "yahoo_finance_scan",
+      "pff_weight": 0.4,
+      "pff_name": "METLIFE INC"
+    },
+    "MS-PA": {
+      "yahoo_ticker": "MS-PA",
+      "parent_ticker": "MS",
+      "security_name": "Morgan Stanley",
+      "last_known_price": 19.41,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": true,
+      "source": "yahoo_finance_scan",
+      "pff_weight": 0.45,
+      "pff_name": "MORGAN STANLEY",
+      "has_prospectus_cache": true,
+      "issuer": "Morgan Stanley",
+      "coupon_type": "floating",
+      "coupon_rate": 4.0,
+      "par_value": 25000.0,
+      "cumulative": false
+    },
+    "MS-PL": {
+      "yahoo_ticker": "MS-PL",
+      "parent_ticker": "MS",
+      "security_name": "Morgan Stanley",
+      "last_known_price": 20.72,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": false,
+      "source": "yahoo_finance_scan"
+    },
+    "MS-PQ": {
+      "yahoo_ticker": "MS-PQ",
+      "parent_ticker": "MS",
+      "security_name": "Morgan Stanley",
+      "last_known_price": 25.87,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": true,
+      "source": "yahoo_finance_scan",
+      "pff_weight": 0.45,
+      "pff_name": "MORGAN STANLEY DS"
+    },
+    "MTB-PH": {
+      "yahoo_ticker": "MTB-PH",
+      "parent_ticker": "MTB",
+      "security_name": "M&T Bank Corporation",
+      "last_known_price": 25.02,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": false,
+      "source": "yahoo_finance_scan"
+    },
+    "MTB-PJ": {
+      "yahoo_ticker": "MTB-PJ",
+      "parent_ticker": "MTB",
+      "security_name": "M&T Bank Corporation",
+      "last_known_price": 26.07,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": true,
+      "source": "yahoo_finance_scan",
+      "pff_weight": 0.41,
+      "pff_name": "M T BK DEP INT PERP PFD STK SER J"
+    },
+    "MTB-PK": {
+      "yahoo_ticker": "MTB-PK",
+      "parent_ticker": "MTB",
+      "security_name": "M&T Bank Corporation",
+      "last_known_price": 24.95,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": false,
+      "source": "yahoo_finance_scan"
+    },
+    "MTB-PR": {
+      "yahoo_ticker": "MTB-PR",
+      "parent_ticker": "MTB",
+      "security_name": "",
+      "last_known_price": 1009.0,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": false,
+      "source": "yahoo_finance_scan"
+    },
+    "NEE-PN": {
+      "yahoo_ticker": "NEE-PN",
+      "parent_ticker": "NEE",
+      "security_name": "",
+      "last_known_price": 23.93,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": true,
+      "source": "yahoo_finance_scan",
+      "pff_weight": 0.47,
+      "pff_name": "NEXTERA ENERGY CAPITAL HOLDINGS IN"
+    },
+    "NEE-PT": {
+      "yahoo_ticker": "NEE-PT",
+      "parent_ticker": "NEE",
+      "security_name": "NextEra Energy, Inc.",
+      "last_known_price": 52.47,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": true,
+      "source": "yahoo_finance_scan",
+      "pff_weight": 0.82,
+      "pff_name": "NEXTERA ENERGY UNITS INC"
+    },
+    "NEE-PV": {
+      "yahoo_ticker": "NEE-PV",
+      "parent_ticker": "NEE",
+      "security_name": "NextEra Energy, Inc.",
+      "last_known_price": 50.33,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": false,
+      "source": "yahoo_finance_scan"
+    },
+    "NLY-PF": {
+      "yahoo_ticker": "NLY-PF",
+      "parent_ticker": "NLY",
+      "security_name": "Annaly Capital Management, Inc.",
+      "last_known_price": 25.47,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": true,
+      "source": "yahoo_finance_scan",
+      "pff_weight": 0.38,
+      "pff_name": "ANNALY CAPITAL MANAGEMENT INC"
+    },
+    "NLY-PI": {
+      "yahoo_ticker": "NLY-PI",
+      "parent_ticker": "NLY",
+      "security_name": "Annaly Capital Management, Inc.",
+      "last_known_price": 25.09,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": false,
+      "source": "yahoo_finance_scan"
+    },
+    "ORCL-PD": {
+      "yahoo_ticker": "ORCL-PD",
+      "parent_ticker": "ORCL",
+      "security_name": "Oracle Corp",
+      "last_known_price": 47.68,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": true,
+      "source": "yahoo_finance_scan",
+      "pff_weight": 2.54,
+      "pff_name": "ORACLE CORPORATION"
+    },
+    "PCG-PB": {
+      "yahoo_ticker": "PCG-PB",
+      "parent_ticker": "PCG",
+      "security_name": "Pacific Gas and Electric Company",
+      "last_known_price": 20.45,
+      "exchange": "ASE",
+      "status": "active",
+      "in_pff": false,
+      "source": "yahoo_finance_scan"
+    },
+    "PCG-PD": {
+      "yahoo_ticker": "PCG-PD",
+      "parent_ticker": "PCG",
+      "security_name": "Pacific Gas and Electric Company",
+      "last_known_price": 19.0,
+      "exchange": "ASE",
+      "status": "active",
+      "in_pff": false,
+      "source": "yahoo_finance_scan"
+    },
+    "PCG-PE": {
+      "yahoo_ticker": "PCG-PE",
+      "parent_ticker": "PCG",
+      "security_name": "Pacific Gas and Electric Company",
+      "last_known_price": 19.2,
+      "exchange": "ASE",
+      "status": "active",
+      "in_pff": false,
+      "source": "yahoo_finance_scan"
+    },
+    "PCG-PG": {
+      "yahoo_ticker": "PCG-PG",
+      "parent_ticker": "PCG",
+      "security_name": "Pacific Gas and Electric Company",
+      "last_known_price": 17.82,
+      "exchange": "ASE",
+      "status": "active",
+      "in_pff": false,
+      "source": "yahoo_finance_scan"
+    },
+    "PCG-PX": {
+      "yahoo_ticker": "PCG-PX",
+      "parent_ticker": "PCG",
+      "security_name": "PG&E Corp",
+      "last_known_price": 44.62,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": true,
+      "source": "yahoo_finance_scan",
+      "pff_weight": 0.76,
+      "pff_name": "PG&E CORPORATION"
+    },
+    "SCHW-PD": {
+      "yahoo_ticker": "SCHW-PD",
+      "parent_ticker": "SCHW",
+      "security_name": "The Charles Schwab Corporation",
+      "last_known_price": 24.85,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": true,
+      "source": "yahoo_finance_scan",
+      "pff_weight": 0.39,
+      "pff_name": "CHARLES SCHWAB CORPORATION (THE)"
+    },
+    "T-PA": {
+      "yahoo_ticker": "T-PA",
+      "parent_ticker": "T",
+      "security_name": "AT&T Inc.",
+      "last_known_price": 20.31,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": true,
+      "source": "yahoo_finance_scan",
+      "pff_weight": 0.51,
+      "pff_name": "AT&T INC"
+    },
+    "T-PC": {
+      "yahoo_ticker": "T-PC",
+      "parent_ticker": "T",
+      "security_name": "AT&T Inc.",
+      "last_known_price": 18.95,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": true,
+      "source": "yahoo_finance_scan",
+      "pff_weight": 0.7,
+      "pff_name": "AT&T INC",
+      "has_prospectus_cache": true,
+      "issuer": "AT&T Inc.",
+      "coupon_type": "fixed",
+      "coupon_rate": 4.75,
+      "par_value": 25.0,
+      "cumulative": true
+    },
+    "USB-PA": {
+      "yahoo_ticker": "USB-PA",
+      "parent_ticker": "USB",
+      "security_name": "U.S. Bancorp PERP PFD SER A",
+      "last_known_price": 773.97,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": false,
+      "source": "yahoo_finance_scan"
+    },
+    "USB-PH": {
+      "yahoo_ticker": "USB-PH",
+      "parent_ticker": "USB",
+      "security_name": "U.S. Bancorp",
+      "last_known_price": 18.86,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": true,
+      "source": "yahoo_finance_scan",
+      "pff_weight": 0.39,
+      "pff_name": "US BANCORP"
+    },
+    "USB-PQ": {
+      "yahoo_ticker": "USB-PQ",
+      "parent_ticker": "USB",
+      "security_name": "U.S. Bancorp",
+      "last_known_price": 15.37,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": false,
+      "source": "yahoo_finance_scan"
+    },
+    "WFC-PC": {
+      "yahoo_ticker": "WFC-PC",
+      "parent_ticker": "WFC",
+      "security_name": "Wells Fargo & Company",
+      "last_known_price": 17.71,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": false,
+      "source": "yahoo_finance_scan"
+    },
+    "WFC-PD": {
+      "yahoo_ticker": "WFC-PD",
+      "parent_ticker": "WFC",
+      "security_name": "Wells Fargo & Company",
+      "last_known_price": 17.55,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": true,
+      "source": "yahoo_finance_scan",
+      "pff_weight": 0.42,
+      "pff_name": "WELLS FARGO & COMPANY"
+    },
+    "WFC-PL": {
+      "yahoo_ticker": "WFC-PL",
+      "parent_ticker": "WFC",
+      "security_name": "7.50% Non-Cumulative Perpetual Convertible Class A Preferred Stock, Series L",
+      "issuer": "Wells Fargo & Company",
+      "coupon_type": "fixed",
+      "coupon_rate": 7.5,
+      "par_value": 1000.0,
+      "cumulative": false,
+      "last_known_price": null,
+      "exchange": "NYSE",
+      "status": "active",
+      "in_pff": false,
+      "has_prospectus_cache": true,
+      "source": "demo_cache"
+    },
+    "WFC-PY": {
+      "yahoo_ticker": "WFC-PY",
+      "parent_ticker": "WFC",
+      "security_name": "Wells Fargo & Company",
+      "last_known_price": 24.16,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": false,
+      "source": "yahoo_finance_scan"
+    },
+    "WFC-PZ": {
+      "yahoo_ticker": "WFC-PZ",
+      "parent_ticker": "WFC",
+      "security_name": "Wells Fargo & Company",
+      "last_known_price": 19.32,
+      "exchange": "NYQ",
+      "status": "active",
+      "in_pff": true,
+      "source": "yahoo_finance_scan",
+      "pff_weight": 0.43,
+      "pff_name": "WELLS FARGO & COMPANY"
+    }
   }
-]
+}
