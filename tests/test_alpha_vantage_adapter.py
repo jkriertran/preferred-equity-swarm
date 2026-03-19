@@ -12,6 +12,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from src.data import alpha_vantage
 from src.data import market_data
 from src.data import rate_sensitivity
+from src.data import security_context
 from src.data import security_resolver
 
 
@@ -84,6 +85,115 @@ def test_search_terms_include_issuer_and_series_context():
     terms = alpha_vantage._candidate_search_terms("ALL-PH")
     assert "The Allstate Corporation preferred" in terms
     assert "The Allstate Corporation preferred series H" in terms
+
+
+def test_security_context_prefers_cached_terms_over_universe_and_keeps_snapshot_separate():
+    original_loader = security_context.load_cached_terms_for_ticker
+    original_universe_cache = security_context._universe_cache
+    original_snapshot_cache = security_context._snapshot_cache
+    try:
+        security_context._universe_cache = {
+            "TEST-PA": {
+                "security_name": "Universe Name",
+                "issuer": "Universe Issuer",
+                "parent_ticker": "TEST",
+                "coupon_rate": 4.5,
+                "par_value": 25.0,
+                "provider_symbols": {"alpha_vantage": "UNIVERSE-P-A"},
+            }
+        }
+        security_context._snapshot_cache = {
+            "TEST-PA": {
+                "name": "Snapshot Name",
+                "price": 22.10,
+                "dividend_rate": 1.20,
+            }
+        }
+        security_context.load_cached_terms_for_ticker = lambda ticker: {
+            "ticker": "TEST-PA",
+            "security_name": "Cached Name",
+            "coupon_rate": 6.25,
+            "provider_symbols": {"alpha_vantage": "CACHED-P-A"},
+        }
+
+        context = security_context.get_security_context("TEST-PA", include_snapshot=True)
+        assert context["security_name"] == "Cached Name"
+        assert context["coupon_rate"] == 6.25
+        assert context["provider_symbols"]["alpha_vantage"] == "CACHED-P-A"
+        assert context["snapshot_entry"]["name"] == "Snapshot Name"
+        assert context["merged_entry"].get("price") is None
+    finally:
+        security_context.load_cached_terms_for_ticker = original_loader
+        security_context._universe_cache = original_universe_cache
+        security_context._snapshot_cache = original_snapshot_cache
+
+
+def test_resolve_alpha_symbol_prefers_explicit_provider_override():
+    original_context = alpha_vantage.get_security_context
+    original_listing_lookup = alpha_vantage._lookup_listing_status_row
+    try:
+        alpha_vantage.get_security_context = lambda ticker, include_snapshot=False: {
+            "ticker": "ALL-PH",
+            "security_name": "Allstate Series H Preferred",
+            "issuer": "The Allstate Corporation",
+            "provider_symbols": {"alpha_vantage": "ALL.EXPLICIT"},
+            "merged_entry": {
+                "security_name": "Allstate Series H Preferred",
+                "issuer": "The Allstate Corporation",
+                "provider_symbols": {"alpha_vantage": "ALL.EXPLICIT"},
+            },
+        }
+        alpha_vantage._lookup_listing_status_row = lambda ticker: {
+            "symbol": "ALL-P-H",
+            "name": "Allstate Corp (The)",
+            "exchange": "NYSE",
+        }
+
+        resolution = alpha_vantage.resolve_alpha_symbol("ALL-PH", require_preferred=True)
+        assert resolution is not None
+        assert resolution["symbol"] == "ALL.EXPLICIT"
+        assert resolution["source"] == "provider_override"
+        assert resolution["candidates"][0] == "ALL.EXPLICIT"
+    finally:
+        alpha_vantage.get_security_context = original_context
+        alpha_vantage._lookup_listing_status_row = original_listing_lookup
+
+
+def test_resolve_alpha_symbol_prefers_listing_status_over_search():
+    original_context = alpha_vantage.get_security_context
+    original_listing_lookup = alpha_vantage._lookup_listing_status_row
+    original_search = alpha_vantage._search_reference_symbol
+    try:
+        alpha_vantage.get_security_context = lambda ticker, include_snapshot=False: {
+            "ticker": "ALL-PH",
+            "security_name": "Allstate Series H Preferred",
+            "issuer": "The Allstate Corporation",
+            "provider_symbols": {},
+            "merged_entry": {
+                "security_name": "Allstate Series H Preferred",
+                "issuer": "The Allstate Corporation",
+            },
+        }
+        alpha_vantage._lookup_listing_status_row = lambda ticker: {
+            "symbol": "ALL-P-H",
+            "name": "Allstate Corp (The)",
+            "exchange": "NYSE",
+        }
+        alpha_vantage._search_reference_symbol = (
+            lambda *args, **kwargs: (_ for _ in ()).throw(
+                AssertionError("listing-status resolution should short-circuit search")
+            )
+        )
+
+        resolution = alpha_vantage.resolve_alpha_symbol("ALL-PH", require_preferred=True)
+        assert resolution is not None
+        assert resolution["symbol"] == "ALL-P-H"
+        assert resolution["source"] == "listing_status"
+        assert resolution["reference"]["source"] == "listing_status"
+    finally:
+        alpha_vantage.get_security_context = original_context
+        alpha_vantage._lookup_listing_status_row = original_listing_lookup
+        alpha_vantage._search_reference_symbol = original_search
 
 
 def test_market_data_derives_dividend_fields_from_terms():
@@ -214,6 +324,80 @@ def test_alpha_time_series_normalizes_weekly_payload():
         alpha_vantage.lookup_reference_symbol = original_lookup
 
 
+def test_alpha_fetchers_share_resolved_symbol():
+    original_resolve = alpha_vantage.resolve_alpha_symbol
+    original_request = alpha_vantage._request_json
+    original_quote_cache = dict(alpha_vantage._quote_cache)
+    original_dividend_cache = dict(alpha_vantage._dividend_cache)
+    try:
+        alpha_vantage._quote_cache.clear()
+        alpha_vantage._dividend_cache.clear()
+        alpha_vantage.resolve_alpha_symbol = lambda ticker, require_preferred=False: {
+            "symbol": "ALL-P-H",
+            "candidates": ["ALL-P-H"],
+            "reference": {
+                "symbol": "ALL-P-H",
+                "name": "Allstate Corp (The)",
+                "type": "preferred stock",
+                "region": "United States",
+            },
+            "source": "listing_status",
+            "metadata": {"security_name": "Allstate Series H Preferred"},
+            "require_preferred": require_preferred,
+        }
+
+        seen_symbols = []
+
+        def fake_request(**params):
+            seen_symbols.append(params.get("symbol"))
+            function = params.get("function")
+            if function == "GLOBAL_QUOTE":
+                return {
+                    "Global Quote": {
+                        "01. symbol": "ALL-P-H",
+                        "05. price": "25.00",
+                        "06. volume": "12345",
+                    }
+                }
+            if function == "TIME_SERIES_WEEKLY":
+                return {
+                    "Weekly Time Series": {
+                        "2026-03-13": {
+                            "1. open": "24.90",
+                            "2. high": "25.10",
+                            "3. low": "24.75",
+                            "4. close": "25.00",
+                            "5. volume": "12345",
+                        }
+                    }
+                }
+            if function == "DIVIDENDS":
+                return {
+                    "data": [
+                        {"payment_date": "2025-01-15", "amount": "0.31875"},
+                    ]
+                }
+            return {"status": "error", "message": "unexpected"}
+
+        alpha_vantage._request_json = fake_request
+
+        quote = alpha_vantage.get_quote("ALL-PH", require_preferred=True)
+        history = alpha_vantage.get_time_series("ALL-PH", period="1y", require_preferred=True)
+        dividends = alpha_vantage.get_dividends("ALL-PH", require_preferred=True)
+
+        assert quote is not None
+        assert history is not None
+        assert dividends is not None
+        assert set(seen_symbols) == {"ALL-P-H"}
+    finally:
+        alpha_vantage.resolve_alpha_symbol = original_resolve
+        alpha_vantage._request_json = original_request
+        alpha_vantage._quote_cache.clear()
+        alpha_vantage._quote_cache.update(original_quote_cache)
+        alpha_vantage._dividend_cache.clear()
+        alpha_vantage._dividend_cache.update(original_dividend_cache)
+
+
 def test_market_data_alias_points_to_preferred_info():
     original_get_preferred_info = market_data.get_preferred_info
     try:
@@ -240,6 +424,33 @@ def test_market_data_uses_live_benchmark_for_reset_fixed_to_floating():
     finally:
         market_data._get_snapshot_data = original_snapshot
         market_data.get_sofr_rate = original_sofr
+
+
+def test_market_data_falls_back_to_snapshot_when_live_data_missing():
+    original_live = market_data._get_preferred_info_from_alpha_vantage
+    original_snapshot = market_data._get_snapshot_data
+    try:
+        market_data._get_preferred_info_from_alpha_vantage = lambda ticker: {
+            "ticker": ticker,
+            "error": "Alpha Vantage market data unavailable: synthetic failure",
+        }
+        market_data._get_snapshot_data = lambda ticker: {
+            "ticker": ticker,
+            "provider": "snapshot",
+            "price": 21.5,
+            "dividend_rate": 1.275,
+            "dividend_yield": 1.275 / 21.5,
+            "currency": "USD",
+            "is_snapshot": True,
+        }
+
+        info = market_data.get_preferred_info("ALL-PH")
+        assert info["provider"] == "snapshot"
+        assert info["price"] == 21.5
+        assert info["is_snapshot"] is True
+    finally:
+        market_data._get_preferred_info_from_alpha_vantage = original_live
+        market_data._get_snapshot_data = original_snapshot
 
 
 def test_rate_sensitivity_reads_floating_spread_bps_schema():
@@ -296,12 +507,17 @@ if __name__ == "__main__":
     test_lookup_reference_prefers_provider_override()
     test_listing_status_row_resolves_official_alpha_symbol()
     test_search_terms_include_issuer_and_series_context()
+    test_security_context_prefers_cached_terms_over_universe_and_keeps_snapshot_separate()
+    test_resolve_alpha_symbol_prefers_explicit_provider_override()
+    test_resolve_alpha_symbol_prefers_listing_status_over_search()
     test_market_data_derives_dividend_fields_from_terms()
     test_market_data_falls_back_to_time_series_when_quote_missing()
     test_alpha_dividend_history_normalizes_payload()
     test_alpha_time_series_normalizes_weekly_payload()
+    test_alpha_fetchers_share_resolved_symbol()
     test_market_data_alias_points_to_preferred_info()
     test_market_data_uses_live_benchmark_for_reset_fixed_to_floating()
+    test_market_data_falls_back_to_snapshot_when_live_data_missing()
     test_rate_sensitivity_reads_floating_spread_bps_schema()
     test_security_resolver_rejects_non_preferred_alpha_match()
     print("Alpha Vantage adapter regression tests passed.")

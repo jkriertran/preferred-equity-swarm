@@ -20,7 +20,6 @@ Usage:
     # Returns a list of all known preferred tickers
 """
 
-import json
 import re
 import logging
 from pathlib import Path
@@ -28,7 +27,7 @@ from typing import Optional
 
 from src.data.alpha_vantage import get_quote as get_alpha_vantage_quote
 from src.data.alpha_vantage import is_preferred_reference, lookup_reference_symbol
-from src.data.prospectus_inventory import load_cached_terms_for_ticker
+from src.data.security_context import get_security_context, load_preferred_universe
 
 logger = logging.getLogger(__name__)
 
@@ -36,51 +35,7 @@ logger = logging.getLogger(__name__)
 # Paths
 # ---------------------------------------------------------------------------
 _DATA_DIR = Path(__file__).resolve().parent.parent.parent / "data"
-_UNIVERSE_PATH = _DATA_DIR / "preferred_universe.json"
 _DEMO_CACHE_DIR = _DATA_DIR / "prospectus_terms" / "demo"
-_SNAPSHOT_PATH = _DATA_DIR / "market_snapshots.json"
-
-# ---------------------------------------------------------------------------
-# In-memory cache (loaded once)
-# ---------------------------------------------------------------------------
-_universe_cache: Optional[dict] = None
-_snapshot_cache: Optional[dict] = None
-
-
-def _load_universe() -> dict:
-    """Load the preferred universe reference database."""
-    global _universe_cache
-    if _universe_cache is not None:
-        return _universe_cache
-
-    if not _UNIVERSE_PATH.exists():
-        logger.warning("preferred_universe.json not found at %s", _UNIVERSE_PATH)
-        _universe_cache = {}
-        return _universe_cache
-
-    with open(_UNIVERSE_PATH) as f:
-        data = json.load(f)
-
-    _universe_cache = data.get("securities", {})
-    logger.info("Loaded preferred universe with %d securities", len(_universe_cache))
-    return _universe_cache
-
-
-def _load_snapshots() -> dict:
-    """Load the market snapshots for price validation."""
-    global _snapshot_cache
-    if _snapshot_cache is not None:
-        return _snapshot_cache
-
-    if not _SNAPSHOT_PATH.exists():
-        _snapshot_cache = {}
-        return _snapshot_cache
-
-    with open(_SNAPSHOT_PATH) as f:
-        data = json.load(f)
-
-    _snapshot_cache = data.get("securities", data)
-    return _snapshot_cache
 
 
 # ---------------------------------------------------------------------------
@@ -194,31 +149,33 @@ def resolve_security(raw_ticker: str) -> dict:
     """
     ticker = normalize_ticker(raw_ticker)
     warnings = []
+    context = get_security_context(ticker)
+    universe_entry = context.get("universe_entry") or {}
+    cached_terms = context.get("cached_terms") or {}
+    merged_entry = context.get("merged_entry") or {}
 
     # Layer 1: Curated universe
-    universe = _load_universe()
-    if ticker in universe:
-        entry = universe[ticker]
+    if universe_entry:
         result = {
             "ticker": ticker,
             "resolved": True,
             "resolution_source": "universe",
-            "security_name": entry.get("security_name"),
-            "issuer": entry.get("issuer"),
-            "parent_ticker": entry.get("parent_ticker"),
-            "status": entry.get("status", "active"),
-            "in_pff": entry.get("in_pff", False),
-            "has_prospectus_cache": _has_demo_cache(ticker),
-            "coupon_type": entry.get("coupon_type"),
-            "coupon_rate": entry.get("coupon_rate"),
-            "par_value": entry.get("par_value"),
-            "last_known_price": entry.get("last_known_price"),
+            "security_name": context.get("security_name"),
+            "issuer": context.get("issuer"),
+            "parent_ticker": context.get("parent_ticker"),
+            "status": universe_entry.get("status", "active"),
+            "in_pff": universe_entry.get("in_pff", False),
+            "has_prospectus_cache": context.get("has_prospectus_cache", False),
+            "coupon_type": context.get("coupon_type"),
+            "coupon_rate": context.get("coupon_rate"),
+            "par_value": context.get("par_value"),
+            "last_known_price": merged_entry.get("last_known_price"),
             "warnings": warnings,
             "trusted_for_analysis": True,
         }
 
         # Validate status
-        if entry.get("status") == "redeemed":
+        if universe_entry.get("status") == "redeemed":
             warnings.append(
                 f"{ticker} has been redeemed and is no longer trading."
             )
@@ -226,8 +183,8 @@ def resolve_security(raw_ticker: str) -> dict:
         return result
 
     # Layer 2: Demo cache file exists but not in universe
-    if _has_demo_cache(ticker):
-        terms = _load_demo_cache(ticker)
+    if context.get("has_prospectus_cache"):
+        terms = cached_terms
         warnings.append(
             f"{ticker} found in demo cache but not in the curated universe. "
             "Prospectus terms are available but metadata may be incomplete."
@@ -236,15 +193,15 @@ def resolve_security(raw_ticker: str) -> dict:
             "ticker": ticker,
             "resolved": True,
             "resolution_source": "demo_cache",
-            "security_name": terms.get("security_name"),
-            "issuer": terms.get("issuer"),
-            "parent_ticker": ticker.split("-")[0] if "-" in ticker else ticker,
+            "security_name": context.get("security_name"),
+            "issuer": context.get("issuer"),
+            "parent_ticker": context.get("parent_ticker"),
             "status": "active",
             "in_pff": False,
             "has_prospectus_cache": True,
-            "coupon_type": terms.get("coupon_type"),
-            "coupon_rate": terms.get("coupon_rate"),
-            "par_value": terms.get("par_value"),
+            "coupon_type": context.get("coupon_type"),
+            "coupon_rate": context.get("coupon_rate"),
+            "par_value": context.get("par_value"),
             "last_known_price": None,
             "warnings": warnings,
             "trusted_for_analysis": True,
@@ -333,12 +290,12 @@ def resolve_security(raw_ticker: str) -> dict:
 # ---------------------------------------------------------------------------
 def _has_demo_cache(ticker: str) -> bool:
     """Check if any structured prospectus cache exists for this ticker."""
-    return bool(load_cached_terms_for_ticker(ticker))
+    return bool(get_security_context(ticker).get("has_prospectus_cache"))
 
 
 def _load_demo_cache(ticker: str) -> dict:
     """Load the best available structured prospectus cache for a ticker."""
-    return load_cached_terms_for_ticker(ticker)
+    return dict(get_security_context(ticker).get("cached_terms") or {})
 
 
 # ---------------------------------------------------------------------------
@@ -375,7 +332,7 @@ def get_known_tickers() -> list:
     Return a sorted list of all known preferred stock tickers
     from the curated universe.
     """
-    universe = _load_universe()
+    universe = load_preferred_universe()
     return sorted(universe.keys())
 
 
@@ -394,7 +351,7 @@ def get_pff_tickers() -> list:
     """
     Return a sorted list of tickers that are currently held in the PFF ETF.
     """
-    universe = _load_universe()
+    universe = load_preferred_universe()
     return sorted(
         ticker for ticker, entry in universe.items()
         if entry.get("in_pff")
@@ -415,7 +372,7 @@ def search_by_issuer(query: str) -> list:
     list[dict]
         A list of matching security entries with their tickers.
     """
-    universe = _load_universe()
+    universe = load_preferred_universe()
     query_upper = query.upper()
     results = []
     for ticker, entry in universe.items():
@@ -445,7 +402,7 @@ def get_universe_grouped_by_issuer() -> list:
             - tickers: list[str] (e.g., ["BAC-PB", "BAC-PE", ...])
             - has_cache: list[str] (tickers with prospectus cache)
     """
-    universe = _load_universe()
+    universe = load_preferred_universe()
     demo_tickers = set(get_demo_tickers())
 
     # Manual overrides for issuer display names that are hard to clean automatically

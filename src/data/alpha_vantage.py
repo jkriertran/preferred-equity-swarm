@@ -12,7 +12,6 @@ handles provider-specific lookup/search logic here. Alpha Vantage is used for:
 
 from __future__ import annotations
 
-import json
 import logging
 import os
 import csv
@@ -22,7 +21,7 @@ from typing import Any, Dict, List, Optional, Tuple
 import pandas as pd
 import requests
 
-from src.data.prospectus_inventory import load_cached_terms_for_ticker
+from src.data.security_context import get_security_context
 from src.utils.config import (
     ALPHA_VANTAGE_API_KEY,
     ALPHA_VANTAGE_LISTING_STATUS_PATH,
@@ -34,7 +33,6 @@ logger = logging.getLogger(__name__)
 
 _API_BASE = "https://www.alphavantage.co/query"
 _DATA_DIR = Path(__file__).resolve().parent.parent.parent / "data"
-_UNIVERSE_PATH = _DATA_DIR / "preferred_universe.json"
 
 _REQUEST_TIMEOUT = 20
 _PREFERRED_KEYWORDS = (
@@ -51,7 +49,6 @@ _PREFERRED_KEYWORDS = (
     "mandatory convertible",
 )
 
-_universe_cache: Optional[Dict[str, Any]] = None
 _reference_cache: Dict[Tuple[str, bool], Optional[Dict[str, Any]]] = {}
 _quote_cache: Dict[str, Dict[str, Any]] = {}
 _overview_cache: Dict[str, Dict[str, Any]] = {}
@@ -136,41 +133,17 @@ def _load_listing_status_index() -> Dict[str, Dict[str, Any]]:
     return _listing_status_cache
 
 
-def _load_universe() -> Dict[str, Any]:
-    """Load the preferred universe once for local metadata lookups."""
-    global _universe_cache
-    if _universe_cache is not None:
-        return _universe_cache
-
-    try:
-        with open(_UNIVERSE_PATH, "r", encoding="utf-8") as f:
-            data = json.load(f)
-        _universe_cache = data.get("securities", {})
-    except (OSError, json.JSONDecodeError):
-        _universe_cache = {}
-    return _universe_cache
-
-
 def _load_symbol_metadata(ticker: str) -> Dict[str, Any]:
-    """Load the best local metadata available for a ticker."""
-    terms = load_cached_terms_for_ticker(ticker) or {}
-    universe_entry = _load_universe().get(ticker, {})
-    merged = dict(universe_entry)
-    merged.update({k: v for k, v in terms.items() if v is not None})
-    return merged
+    """Return the merged local metadata for a ticker."""
+    return dict(get_security_context(ticker).get("merged_entry") or {})
 
 
 def _provider_symbol_override(ticker: str) -> Optional[str]:
-    """Return an explicit Alpha Vantage symbol override when configured."""
-    metadata = _load_symbol_metadata(ticker)
-    provider_symbols = metadata.get("provider_symbols") or {}
+    """Return an explicit Alpha provider override when configured locally."""
+    provider_symbols = (get_security_context(ticker).get("provider_symbols") or {})
     override = provider_symbols.get("alpha_vantage")
     if isinstance(override, str) and override.strip():
         return override.strip().upper()
-
-    listing_row = _lookup_listing_status_row(ticker)
-    if listing_row:
-        return str(listing_row.get("symbol", "")).strip().upper()
     return None
 
 
@@ -216,6 +189,30 @@ def is_preferred_reference(row: Optional[Dict[str, Any]]) -> bool:
         or "preferred" in type_label
         or _normalize_symbol(symbol).endswith("P")
     )
+
+
+def _build_local_reference(
+    symbol: str,
+    context: Dict[str, Any],
+    source: str,
+    listing_row: Optional[Dict[str, Any]] = None,
+) -> Dict[str, Any]:
+    """Build a normalized reference row from local context."""
+    listing_row = listing_row or {}
+    return {
+        "symbol": str(symbol or "").strip().upper(),
+        "name": (
+            listing_row.get("name")
+            or context.get("security_name")
+            or context.get("issuer")
+            or context.get("ticker")
+            or ""
+        ),
+        "type": "preferred stock",
+        "region": listing_row.get("exchange") or "United States",
+        "exchange": listing_row.get("exchange") or "",
+        "source": source,
+    }
 
 
 def _normalize_search_match(row: Dict[str, Any]) -> Dict[str, Any]:
@@ -397,38 +394,16 @@ def _reference_score(
     return score
 
 
-def lookup_reference_symbol(
+def _search_reference_symbol(
     ticker: str,
-    require_preferred: bool = False,
+    require_preferred: bool,
+    metadata: Optional[Dict[str, Any]] = None,
 ) -> Optional[Dict[str, Any]]:
-    """Look up the most likely Alpha Vantage symbol metadata for a ticker."""
-    ticker = ticker.strip().upper()
-    cache_key = (ticker, require_preferred)
-    if cache_key in _reference_cache:
-        return _reference_cache[cache_key]
-
-    override = _provider_symbol_override(ticker)
-    if override:
-        metadata = _load_symbol_metadata(ticker)
-        listing_row = _lookup_listing_status_row(ticker) or {}
-        result = {
-            "symbol": override,
-            "name": (
-                listing_row.get("name")
-                or metadata.get("security_name")
-                or ticker
-            ),
-            "type": "preferred stock",
-            "region": listing_row.get("exchange") or "United States",
-            "exchange": listing_row.get("exchange") or "",
-            "source": "listing_status" if listing_row else "provider_override",
-        }
-        _reference_cache[cache_key] = result
-        return result
-
+    """Search Alpha Vantage and return the best normalized reference row."""
     best_row: Optional[Dict[str, Any]] = None
     best_score = float("-inf")
-    metadata = _load_symbol_metadata(ticker)
+    metadata = metadata or _load_symbol_metadata(ticker)
+
     for keywords in _candidate_search_terms(ticker)[:6]:
         payload = _request_json(function="SYMBOL_SEARCH", keywords=keywords)
         matches = payload.get("bestMatches") or payload.get("data") or []
@@ -444,11 +419,91 @@ def lookup_reference_symbol(
                 best_score = score
 
     if best_row and (not require_preferred or is_preferred_reference(best_row)):
-        _reference_cache[cache_key] = best_row
         return best_row
-
-    _reference_cache[cache_key] = None
     return None
+
+
+def _dedupe_symbols(symbols: List[str]) -> List[str]:
+    """Deduplicate symbols while preserving order."""
+    seen = set()
+    return [value for value in symbols if value and not (value in seen or seen.add(value))]
+
+
+def resolve_alpha_symbol(
+    ticker: str,
+    require_preferred: bool = False,
+) -> Optional[Dict[str, Any]]:
+    """Resolve Alpha symbol candidates and reference metadata once per ticker."""
+    cleaned = ticker.strip().upper()
+    if not cleaned:
+        return None
+
+    context = get_security_context(cleaned)
+    override = _provider_symbol_override(cleaned)
+    listing_row = _lookup_listing_status_row(cleaned)
+    reference = None
+    source = "heuristic"
+
+    if override:
+        reference = _build_local_reference(
+            override,
+            context=context,
+            source="provider_override",
+            listing_row=listing_row,
+        )
+        source = "provider_override"
+    elif listing_row:
+        reference = _build_local_reference(
+            str(listing_row.get("symbol", "")).strip().upper(),
+            context=context,
+            source="listing_status",
+            listing_row=listing_row,
+        )
+        source = "listing_status"
+    else:
+        reference = _search_reference_symbol(
+            cleaned,
+            require_preferred=require_preferred,
+            metadata=context.get("merged_entry") or {},
+        )
+        if reference:
+            source = "search"
+
+    candidates: List[str] = []
+    if reference and reference.get("symbol"):
+        candidates.append(str(reference["symbol"]).strip().upper())
+    if listing_row and listing_row.get("symbol"):
+        candidates.append(str(listing_row["symbol"]).strip().upper())
+    candidates.extend(get_symbol_candidates(cleaned))
+    candidates = _dedupe_symbols(candidates)
+
+    if not candidates:
+        return None
+
+    return {
+        "symbol": candidates[0],
+        "candidates": candidates,
+        "reference": reference,
+        "source": source,
+        "metadata": context,
+        "require_preferred": require_preferred,
+    }
+
+
+def lookup_reference_symbol(
+    ticker: str,
+    require_preferred: bool = False,
+) -> Optional[Dict[str, Any]]:
+    """Look up the most likely Alpha Vantage symbol metadata for a ticker."""
+    ticker = ticker.strip().upper()
+    cache_key = (ticker, require_preferred)
+    if cache_key in _reference_cache:
+        return _reference_cache[cache_key]
+
+    resolution = resolve_alpha_symbol(ticker, require_preferred=require_preferred)
+    reference = resolution.get("reference") if resolution else None
+    _reference_cache[cache_key] = reference
+    return reference
 
 
 def _normalize_quote_payload(payload: Dict[str, Any]) -> Optional[Dict[str, Any]]:
@@ -470,18 +525,6 @@ def _normalize_quote_payload(payload: Dict[str, Any]) -> Optional[Dict[str, Any]
     }
 
 
-def _search_symbols_for_quote(ticker: str, require_preferred: bool) -> List[str]:
-    """Build the ordered list of Alpha Vantage symbols to try for a quote."""
-    reference = lookup_reference_symbol(ticker, require_preferred=require_preferred)
-    candidates: List[str] = []
-    if reference and reference.get("symbol"):
-        candidates.append(str(reference["symbol"]).upper())
-    candidates.extend(get_symbol_candidates(ticker))
-
-    seen = set()
-    return [value for value in candidates if value and not (value in seen or seen.add(value))]
-
-
 def get_quote(
     ticker: str,
     require_preferred: bool = False,
@@ -492,11 +535,16 @@ def get_quote(
     if cached is not None:
         return cached
 
-    reference = lookup_reference_symbol(ticker, require_preferred=require_preferred)
-    metadata = _load_symbol_metadata(ticker)
+    resolution = resolve_alpha_symbol(ticker, require_preferred=require_preferred)
+    if not resolution:
+        _set_last_error("No Alpha Vantage symbol candidates available for the requested ticker.")
+        return None
+
+    reference = resolution.get("reference")
+    metadata = resolution.get("metadata") or {}
     last_error = ""
 
-    for symbol in _search_symbols_for_quote(ticker, require_preferred=require_preferred):
+    for symbol in resolution.get("candidates") or []:
         payload = _request_json(function="GLOBAL_QUOTE", symbol=symbol)
         if payload.get("status") == "error":
             last_error = payload.get("message", "")
@@ -604,8 +652,12 @@ def get_time_series(
     }
     function, extra_params, tail_points = period_specs.get(period, period_specs["1y"])
     last_error = ""
+    resolution = resolve_alpha_symbol(ticker, require_preferred=require_preferred)
+    if not resolution:
+        _set_last_error("No Alpha Vantage symbol candidates available for the requested ticker.")
+        return None
 
-    for symbol in _search_symbols_for_quote(ticker, require_preferred=require_preferred):
+    for symbol in resolution.get("candidates") or []:
         payload = _request_json(function=function, symbol=symbol, **extra_params)
         if payload.get("status") == "error":
             last_error = payload.get("message", "")
@@ -631,7 +683,13 @@ def get_dividends(
         return _dividend_cache[cache_key]
 
     last_error = ""
-    for symbol in _search_symbols_for_quote(ticker, require_preferred=require_preferred):
+    resolution = resolve_alpha_symbol(ticker, require_preferred=require_preferred)
+    if not resolution:
+        _set_last_error("No Alpha Vantage symbol candidates available for the requested ticker.")
+        _dividend_cache[cache_key] = None
+        return None
+
+    for symbol in resolution.get("candidates") or []:
         payload = _request_json(function="DIVIDENDS", symbol=symbol)
         if payload.get("status") == "error":
             last_error = payload.get("message", "")

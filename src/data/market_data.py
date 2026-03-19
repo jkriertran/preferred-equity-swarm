@@ -8,8 +8,6 @@ prospectus terms and, if needed, Alpha dividend history.
 """
 
 from datetime import date
-import json
-import os
 from typing import Optional
 
 import pandas as pd
@@ -18,45 +16,32 @@ from src.data.alpha_vantage import get_dividends as get_alpha_vantage_dividends
 from src.data.alpha_vantage import get_last_error as get_alpha_vantage_last_error
 from src.data.alpha_vantage import get_quote as get_alpha_vantage_quote
 from src.data.alpha_vantage import get_time_series as get_alpha_vantage_time_series
-from src.data.prospectus_inventory import load_cached_terms_for_ticker
 from src.data.rate_data import get_sofr_rate
-
-
-DATA_DIR = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
-    "data",
-)
+from src.data.security_context import get_security_context
 
 
 def _get_snapshot_data(ticker: str) -> Optional[dict]:
     """Retrieve market data from local snapshot if available."""
-    try:
-        snapshot_path = os.path.join(DATA_DIR, "market_snapshots.json")
-        if os.path.exists(snapshot_path):
-            with open(snapshot_path, "r", encoding="utf-8") as f:
-                data = json.load(f)
-                market_data = data.get("market_data", {})
-                if ticker in market_data:
-                    snapshot = market_data[ticker]
-                    return {
-                        "ticker": ticker,
-                        "provider": "snapshot",
-                        "provider_symbol": None,
-                        "name": snapshot.get("name", "Unknown"),
-                        "price": snapshot.get("price"),
-                        "dividend_rate": snapshot.get("dividend_rate"),
-                        "dividend_yield": snapshot.get("dividend_yield"),
-                        "fifty_two_week_high": None,
-                        "fifty_two_week_low": None,
-                        "volume": None,
-                        "sector": None,
-                        "industry": None,
-                        "currency": snapshot.get("currency", "USD"),
-                        "is_snapshot": True,
-                        "as_of": snapshot.get("as_of"),
-                    }
-    except Exception:
-        pass
+    context = get_security_context(ticker, include_snapshot=True)
+    snapshot = context.get("snapshot_entry") or {}
+    if snapshot:
+        return {
+            "ticker": ticker,
+            "provider": "snapshot",
+            "provider_symbol": None,
+            "name": snapshot.get("name") or context.get("security_name") or "Unknown",
+            "price": snapshot.get("price"),
+            "dividend_rate": snapshot.get("dividend_rate"),
+            "dividend_yield": snapshot.get("dividend_yield"),
+            "fifty_two_week_high": None,
+            "fifty_two_week_low": None,
+            "volume": None,
+            "sector": None,
+            "industry": None,
+            "currency": snapshot.get("currency", "USD"),
+            "is_snapshot": True,
+            "as_of": snapshot.get("as_of"),
+        }
     return None
 
 
@@ -79,18 +64,12 @@ def _parse_fraction_to_float(text: Optional[str]) -> Optional[float]:
 
 def _load_structured_terms(ticker: str) -> dict:
     """Load the best available structured terms cache for a ticker."""
-    return load_cached_terms_for_ticker(ticker)
+    return dict(get_security_context(ticker).get("cached_terms") or {})
 
 
 def _load_universe_entry(ticker: str) -> dict:
     """Load the curated universe metadata for a ticker if available."""
-    universe_path = os.path.join(DATA_DIR, "preferred_universe.json")
-    try:
-        with open(universe_path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-        return (data.get("securities") or {}).get(ticker, {})
-    except (OSError, json.JSONDecodeError):
-        return {}
+    return dict(get_security_context(ticker).get("universe_entry") or {})
 
 
 def _to_float(value) -> Optional[float]:
@@ -178,6 +157,7 @@ def _derive_dividend_fields(ticker: str, price: Optional[float]) -> dict:
     reliable source. When those are unavailable, fall back to Alpha Vantage
     dividend history to estimate the current annualized dividend stream.
     """
+    context = get_security_context(ticker, include_snapshot=True)
     snapshot = _get_snapshot_data(ticker)
     if snapshot and snapshot.get("dividend_rate") is not None:
         annual_dividend = _to_float(snapshot.get("dividend_rate"))
@@ -187,19 +167,19 @@ def _derive_dividend_fields(ticker: str, price: Optional[float]) -> dict:
             else _to_float(snapshot.get("dividend_yield"))
         )
         return {
-            "security_name": snapshot.get("name"),
+            "security_name": snapshot.get("name") or context.get("security_name"),
             "coupon_type": None,
             "dividend_rate": annual_dividend,
             "dividend_yield": dividend_yield,
             "dividend_source": "snapshot",
         }
 
-    terms = _load_structured_terms(ticker)
-    universe_entry = _load_universe_entry(ticker)
+    terms = context.get("cached_terms") or {}
+    universe_entry = context.get("universe_entry") or {}
 
-    coupon_rate = terms.get("coupon_rate", universe_entry.get("coupon_rate"))
-    security_name = terms.get("security_name", universe_entry.get("security_name"))
-    coupon_type = terms.get("coupon_type", universe_entry.get("coupon_type"))
+    coupon_rate = context.get("coupon_rate")
+    security_name = context.get("security_name")
+    coupon_type = context.get("coupon_type")
     effective_par = _effective_par_per_share(terms, universe_entry)
 
     if effective_par is not None:
@@ -240,6 +220,7 @@ def _derive_dividend_fields(ticker: str, price: Optional[float]) -> dict:
 
 def _get_preferred_info_from_alpha_vantage(ticker: str) -> dict:
     """Fetch preferred quote data through Alpha Vantage and enrich it locally."""
+    context = get_security_context(ticker)
     quote = get_alpha_vantage_quote(ticker, require_preferred=True)
     quote_error = get_alpha_vantage_last_error()
     provider_symbol = None
@@ -279,14 +260,18 @@ def _get_preferred_info_from_alpha_vantage(ticker: str) -> dict:
         volume = _to_float(latest_bar.get("Volume"))
         provider_symbol = history.attrs.get("provider_symbol")
 
-    metadata = _load_structured_terms(ticker) or _load_universe_entry(ticker)
     dividend_fields = _derive_dividend_fields(ticker, price)
 
     return {
         "ticker": ticker,
         "provider": "alpha_vantage",
         "provider_symbol": provider_symbol,
-        "name": name or dividend_fields.get("security_name") or metadata.get("security_name") or "Unknown",
+        "name": (
+            name
+            or dividend_fields.get("security_name")
+            or context.get("security_name")
+            or "Unknown"
+        ),
         "price": price,
         "dividend_rate": dividend_fields.get("dividend_rate"),
         "dividend_yield": dividend_fields.get("dividend_yield"),
