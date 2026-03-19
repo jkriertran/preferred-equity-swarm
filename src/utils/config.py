@@ -10,21 +10,51 @@ This module handles both local .env files and Streamlit Cloud secrets.
 """
 
 import os
+import sys
 from dotenv import load_dotenv
 
 # 1. Load from .env if present (local development)
 load_dotenv()
 
+def _inject_streamlit_secrets_into_env() -> None:
+    """Load Streamlit secrets into the environment when available.
+
+    Local `streamlit run` sessions often do not have a `secrets.toml` file. In
+    that case Streamlit raises `StreamlitSecretNotFoundError` the first time
+    `st.secrets` is probed, so we treat missing secrets as a normal local-dev
+    condition and leave `.env` values in place.
+    """
+    st = sys.modules.get("streamlit")
+    if st is None or not hasattr(st, "secrets"):
+        return
+
+    secret_not_found_error = getattr(
+        getattr(st, "errors", None),
+        "StreamlitSecretNotFoundError",
+        None,
+    )
+
+    try:
+        secrets = st.secrets
+        for key in [
+            "GOOGLE_API_KEY",
+            "OPENAI_API_KEY",
+            "FRED_API_KEY",
+            "SEC_USER_AGENT",
+            "ALPHA_VANTAGE_API_KEY",
+            "ALPHA_VANTAGE_LISTING_STATUS_PATH",
+            "MARKET_DATA_PROVIDER",
+        ]:
+            if key in secrets:
+                os.environ[key] = str(secrets[key])
+    except Exception as exc:
+        if secret_not_found_error and isinstance(exc, secret_not_found_error):
+            return
+        raise
+
+
 # 2. Check for Streamlit secrets (deployment)
-try:
-    import streamlit as st
-    if hasattr(st, "secrets"):
-        # Inject st.secrets into os.environ so other libraries can see them
-        for key in ["GOOGLE_API_KEY", "OPENAI_API_KEY", "FRED_API_KEY", "SEC_USER_AGENT"]:
-            if key in st.secrets:
-                os.environ[key] = st.secrets[key]
-except ImportError:
-    pass
+_inject_streamlit_secrets_into_env()
 
 # LLM Configuration
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY", "")
@@ -40,12 +70,30 @@ SEC_USER_AGENT = os.getenv("SEC_USER_AGENT", "PreferredEquitySwarm research@exam
 # FRED Configuration
 FRED_API_KEY = os.getenv("FRED_API_KEY", "")
 
+# Market data provider configuration
+ALPHA_VANTAGE_API_KEY = os.getenv("ALPHA_VANTAGE_API_KEY", "")
+ALPHA_VANTAGE_LISTING_STATUS_PATH = os.getenv("ALPHA_VANTAGE_LISTING_STATUS_PATH", "")
+MARKET_DATA_PROVIDER = os.getenv("MARKET_DATA_PROVIDER", "alpha_vantage").strip().lower()
+
 # Project paths
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 DATA_DIR = os.path.join(PROJECT_ROOT, "data")
 RAW_DATA_DIR = os.path.join(DATA_DIR, "raw")
 PROCESSED_DATA_DIR = os.path.join(DATA_DIR, "processed")
 UNIVERSE_DIR = os.path.join(DATA_DIR, "universe")
+
+
+def get_market_data_provider() -> str:
+    """Resolve the market-data provider for the current environment.
+
+    Alpha Vantage is now the sole supported market-data provider. The
+    environment variable is still honored for compatibility, but any empty,
+    auto, or unknown value resolves to ``alpha_vantage``.
+    """
+    provider = os.getenv("MARKET_DATA_PROVIDER", MARKET_DATA_PROVIDER).strip().lower()
+    if provider in ("", "auto", "alpha_vantage"):
+        return "alpha_vantage"
+    return "alpha_vantage"
 
 
 def get_llm(temperature: float = 0.3):

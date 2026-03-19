@@ -13,7 +13,6 @@ UI Design Principles:
 
 import sys
 import os
-import json
 import streamlit as st
 import plotly.graph_objects as go
 import pandas as pd
@@ -29,7 +28,6 @@ from src.data.prospectus_inventory import (
     load_cached_prospectus_inventory,
 )
 from src.data.security_resolver import (
-    resolve_security,
     normalize_ticker,
     get_known_tickers,
     get_demo_tickers,
@@ -120,36 +118,40 @@ with st.sidebar:
     # Collapsible architecture list (improvement #8)
     with st.expander("Swarm Architecture", expanded=False):
         st.markdown("""
-**Layer 1: Data Collection (Parallel)**
-1. Market Data Agent
+**Layer 1: Early Context**
+1. Prospectus Parsing Agent
 2. Rate Context Agent
-3. Dividend Analysis Agent
-4. Prospectus Parsing Agent
 
-**Layer 2: Deterministic Analysis**
+**Layer 2: Security Enrichment**
+3. Market Data Agent
+4. Dividend Analysis Agent
+
+**Layer 3: Deterministic Analysis**
 5. Interest Rate Sensitivity Agent
 
-**Layer 3: Analytical Agents (Parallel)**
+**Layer 4: Analytical Agents (Parallel)**
 6. Call Probability Agent
 7. Tax & Yield Agent
 8. Regulatory & Sector Agent
 9. Relative Value Agent
 
-**Layer 4: Quality Gate**
+**Layer 5: Quality Gate**
 10. Quality Check Agent
 
-**Layer 5: Conditional Routing**
+**Layer 6: Conditional Routing**
 11a. Synthesis Agent *or*
 11b. Error Report Agent
         """)
 
     with st.expander("LangGraph Patterns", expanded=False):
         st.markdown("""
-**Fan-Out:** 4 data agents run in parallel from START, then 4 analytical agents fan out from Layer 2
+**Early Fan-Out:** Prospectus parsing and macro rate context run from `START`
 
-**Fan-In:** Layer 1 feeds Layer 2, Layer 3 feeds Quality Gate
+**Barrier Sequencing:** Prospectus terms feed market data and dividend analysis before interest-rate sensitivity runs
 
-**Conditional Edge:** Routes to Synthesis or Error based on data quality score
+**Analytical Fan-Out:** Four downstream analytical agents run in parallel from the merged state
+
+**Conditional Edge:** Quality routing sends the graph to Synthesis or Error Report
         """)
 
     st.markdown("---")
@@ -217,8 +219,13 @@ with col1:
     ticker = st.text_input(
         "Preferred Stock Ticker",
         value="BAC-PL",
-        placeholder="e.g., BAC-PL, JPM-PD, WFC-PL",
-        help="Enter a preferred stock ticker symbol. Use the format ISSUER-P[SERIES]. Cached tickers analyze faster."
+        placeholder="e.g., BAC-P-L, ALL-P-H, C-P-N, or BAC-PL",
+        help=(
+            "Enter a preferred stock ticker symbol. "
+            "Alpha-style aliases like ISSUER-P-SERIES and the app's curated "
+            "canonical format like ISSUER-PSERIES are both accepted. "
+            "Cached tickers analyze faster."
+        ),
     )
 
 with col2:

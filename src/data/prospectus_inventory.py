@@ -88,6 +88,37 @@ def get_inventory_lookup() -> Dict[str, Dict[str, Any]]:
     return {row["ticker"]: row for row in load_cached_prospectus_inventory()}
 
 
+def load_cached_terms_for_ticker(ticker: str) -> Dict[str, Any]:
+    """Return the best cached structured terms for a ticker, if available.
+
+    Demo cache files are checked first, then runtime cache files. Runtime
+    entries may be stored either as `<ticker>.json` or as `<accession>.json`,
+    so we also scan file contents for a matching `ticker` field.
+    """
+    normalized = str(ticker or "").upper().strip()
+    if not normalized:
+        return {}
+
+    direct_candidates = [
+        os.path.join(DEMO_CACHE_DIR, f"{normalized}.json"),
+        os.path.join(RUNTIME_CACHE_DIR, f"{normalized}.json"),
+    ]
+    for path in direct_candidates:
+        terms = _load_json(path)
+        if isinstance(terms, dict) and not terms.get("error"):
+            return terms
+
+    for directory in (DEMO_CACHE_DIR, RUNTIME_CACHE_DIR):
+        for path in _iter_cache_files(directory):
+            terms = _load_json(path)
+            if not isinstance(terms, dict) or terms.get("error"):
+                continue
+            if str(terms.get("ticker", "")).upper().strip() == normalized:
+                return terms
+
+    return {}
+
+
 def _inventory_row_from_terms(
     ticker: str,
     terms: Dict[str, Any],

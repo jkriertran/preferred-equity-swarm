@@ -23,6 +23,8 @@ import json
 import os
 from typing import Any, Dict, List, Optional
 
+from src.data.alpha_vantage import get_company_overview
+
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "data")
 DEMO_TERMS_CACHE_DIR = os.path.join(DATA_DIR, "prospectus_terms", "demo")
@@ -236,7 +238,8 @@ def _same_issuer(issuer_a: str, issuer_b: str) -> bool:
 def _get_common_dividend_yield(issuer: str, preferred_ticker: str) -> Optional[float]:
     """Attempt to fetch the common stock dividend yield for the issuer.
 
-    Uses yfinance for the common ticker derived from the preferred ticker.
+    Uses Alpha Vantage company overview data for the common ticker derived
+    from the preferred ticker.
     """
     # Derive common ticker from preferred ticker (e.g., "JPM-PD" -> "JPM")
     common_ticker = preferred_ticker.split("-")[0].split(".")[0].upper()
@@ -244,11 +247,12 @@ def _get_common_dividend_yield(issuer: str, preferred_ticker: str) -> Optional[f
         return None
 
     try:
-        import yfinance as yf
-        info = yf.Ticker(common_ticker).info
-        div_yield = info.get("dividendYield") or info.get("yield")
-        if div_yield and div_yield > 0:
-            return round(div_yield * 100, 2)
+        overview = get_company_overview(common_ticker)
+        div_yield = overview.get("DividendYield") or overview.get("dividend_yield")
+        if div_yield:
+            numeric_yield = float(div_yield)
+            if numeric_yield > 0:
+                return round(numeric_yield * 100 if numeric_yield < 1 else numeric_yield, 2)
     except Exception:
         pass
 

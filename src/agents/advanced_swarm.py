@@ -1,58 +1,61 @@
 """
 Advanced Preferred Equity Swarm
 ================================
-Phase 3 implementation with eight analytical agents organized in three layers:
+Phase 3 implementation with eleven agents organized in a cache-aware sequence:
 
-Layer 1 -- PARALLEL DATA COLLECTION (fan-out from START):
-  Four data agents run simultaneously to gather raw inputs.
-    1. Market Data Agent
+Layer 1 -- EARLY CONTEXT:
+  Prospectus/cache resolution runs immediately alongside macro rate context.
+    1. Prospectus Parsing Agent
     2. Rate Context Agent
-    3. Dividend Analysis Agent
-    4. Prospectus Parsing Agent
 
-Layer 2 -- DETERMINISTIC ANALYSIS (fan-in):
-  The Interest Rate Sensitivity Agent consumes all Layer 1 outputs.
+Layer 2 -- SECURITY ENRICHMENT:
+  Market and dividend analysis wait for prospectus/cache terms so first-run
+  analyses can benefit from cached structure data.
+    3. Market Data Agent
+    4. Dividend Analysis Agent
+
+Layer 3 -- DETERMINISTIC ANALYSIS:
+  The Interest Rate Sensitivity Agent consumes the full upstream context.
     5. Interest Rate Sensitivity Agent
 
-Layer 3 -- ANALYTICAL AGENTS (parallel fan-out from Layer 2):
-  Four new agents run in parallel, each consuming the full state.
+Layer 4 -- ANALYTICAL AGENTS:
+  Four agents run in parallel off the merged state.
     6. Call Probability Agent
     7. Tax and Yield Agent
     8. Regulatory and Sector Agent
     9. Relative Value Agent
 
-Layer 4 -- QUALITY GATE (fan-in from Layer 3):
+Layer 5 -- QUALITY GATE:
     10. Quality Check Agent
 
-Layer 5 -- CONDITIONAL OUTPUT:
+Layer 6 -- CONDITIONAL OUTPUT:
     11a. Synthesis Agent (Gemini)  -- if quality passes
     11b. Error Report Agent        -- if quality fails
 
 Graph Structure:
 
-                        +-- market_data_agent ----+
-                        |                         |
-    START --[fan-out]---+-- rate_context_agent ----+--[fan-in]--> interest_rate_agent
-                        |                         |                      |
-                        +-- dividend_agent -------+              [fan-out Layer 3]
-                        |                         |              /    |    |    \\
-                        +-- prospectus_agent -----+         call  tax  reg  relval
-                                                             \\    |    |    /
-                                                          [fan-in Layer 3]
-                                                                  |
-                                                          quality_check_agent
-                                                             /         \\
-                                                       [pass]         [fail]
-                                                         |               |
-                                                  synthesis_agent    error_report
-                                                         |               |
-                                                        END             END
+                              +--> prospectus_agent ----+--> market_data_agent --+
+                              |                         |                         |
+    START --[fan-out]---------+                         +--> dividend_agent ------+--> interest_rate_agent
+                              |                                                   |
+                              +--> rate_context_agent -----------------------------+
+                                                                                   |
+                                                                          [fan-out Layer 4]
+                                                                              /   |   |   \\
+                                                                           call  tax reg  relval
+                                                                              \\   |   |   /
+                                                                           quality_check_agent
+                                                                              /           \\
+                                                                        [pass]           [fail]
+                                                                          |                |
+                                                                   synthesis_agent   error_report
+                                                                          |                |
+                                                                         END              END
 """
 
 import os
 import sys
 import json
-import operator
 import re
 from typing import TypedDict, Annotated, Literal
 from langgraph.graph import StateGraph, END, START
@@ -146,7 +149,7 @@ class AdvancedSwarmState(TypedDict):
 # ---------------------------------------------------------------------------
 
 def market_data_agent(state: AdvancedSwarmState) -> dict:
-    """Fetches market data from Yahoo Finance."""
+    """Fetches market data from Alpha Vantage."""
     from src.data.market_data import get_preferred_info
 
     ticker = state["ticker"]
@@ -169,11 +172,11 @@ def market_data_agent(state: AdvancedSwarmState) -> dict:
 
 def rate_context_agent(state: AdvancedSwarmState) -> dict:
     """Fetches Treasury yield curve data."""
-    from src.data.rate_data import get_treasury_yields_from_yfinance
+    from src.data.rate_data import get_treasury_yields
 
     print("  [Rate Context Agent] Fetching Treasury yield data...")
 
-    yields = get_treasury_yields_from_yfinance()
+    yields = get_treasury_yields()
 
     status = state.get("agent_status", {})
     if not yields:
@@ -198,7 +201,9 @@ def dividend_agent(state: AdvancedSwarmState) -> dict:
     analysis = analyze_dividend_pattern(ticker)
 
     status = state.get("agent_status", {})
-    if not analysis.get("has_dividend_history", False):
+    has_history = analysis.get("has_dividend_history", False)
+    has_frequency = analysis.get("frequency") is not None
+    if not has_history and not has_frequency:
         status["dividend"] = "failed"
         errors = state.get("errors", [])
         errors.append(f"Dividend Agent: {analysis.get('error', 'no history')}")
@@ -729,11 +734,12 @@ def error_report_agent(state: AdvancedSwarmState) -> dict:
 # ---------------------------------------------------------------------------
 
 def build_advanced_graph() -> StateGraph:
-    """Construct the Phase 3 swarm with three layers of parallel execution
+    """Construct the Phase 3 swarm with a cache-aware execution order
     and conditional routing.
 
-    Layer 1: 4 data agents in parallel (fan-out from START)
-    Layer 2: Interest Rate Agent (fan-in from Layer 1)
+    Layer 1: Prospectus + Rate Context
+    Layer 2: Market Data + Dividend (after prospectus terms/cache are available)
+    Layer 3: Interest Rate Agent (fan-in)
     Layer 3: 4 analytical agents in parallel (fan-out from Layer 2)
     Layer 4: Quality Gate (fan-in from Layer 3)
     Layer 5: Conditional routing to Synthesis or Error Report
@@ -759,31 +765,33 @@ def build_advanced_graph() -> StateGraph:
     workflow.add_node("synthesis_agent", synthesis_agent)
     workflow.add_node("error_report_agent", error_report_agent)
 
-    # --- Layer 1: Parallel Fan-Out from START ---
-    workflow.add_edge(START, "market_data_agent")
-    workflow.add_edge(START, "rate_context_agent")
-    workflow.add_edge(START, "dividend_agent")
+    # --- Layer 1: Prospectus + Rate Context ---
     workflow.add_edge(START, "prospectus_agent")
+    workflow.add_edge(START, "rate_context_agent")
 
-    # --- Layer 2: Fan-In to Interest Rate Agent ---
-    workflow.add_edge("market_data_agent", "interest_rate_agent")
-    workflow.add_edge("rate_context_agent", "interest_rate_agent")
-    workflow.add_edge("dividend_agent", "interest_rate_agent")
-    workflow.add_edge("prospectus_agent", "interest_rate_agent")
+    # --- Layer 2: Market Data + Dividend after Prospectus ---
+    workflow.add_edge("prospectus_agent", "market_data_agent")
+    workflow.add_edge("prospectus_agent", "dividend_agent")
 
-    # --- Layer 3: Parallel Fan-Out from Interest Rate Agent ---
+    # --- Layer 3: Fan-In to Interest Rate Agent ---
+    workflow.add_edge(
+        ["market_data_agent", "rate_context_agent", "dividend_agent", "prospectus_agent"],
+        "interest_rate_agent",
+    )
+
+    # --- Layer 4: Parallel Fan-Out from Interest Rate Agent ---
     workflow.add_edge("interest_rate_agent", "call_probability_agent")
     workflow.add_edge("interest_rate_agent", "tax_yield_agent")
     workflow.add_edge("interest_rate_agent", "regulatory_agent")
     workflow.add_edge("interest_rate_agent", "relative_value_agent")
 
-    # --- Layer 4: Fan-In to Quality Gate ---
-    workflow.add_edge("call_probability_agent", "quality_check_agent")
-    workflow.add_edge("tax_yield_agent", "quality_check_agent")
-    workflow.add_edge("regulatory_agent", "quality_check_agent")
-    workflow.add_edge("relative_value_agent", "quality_check_agent")
+    # --- Layer 5: Fan-In to Quality Gate ---
+    workflow.add_edge(
+        ["call_probability_agent", "tax_yield_agent", "regulatory_agent", "relative_value_agent"],
+        "quality_check_agent",
+    )
 
-    # --- Layer 5: Conditional Routing ---
+    # --- Layer 6: Conditional Routing ---
     workflow.add_conditional_edges(
         "quality_check_agent",
         route_after_quality_check,
@@ -834,9 +842,10 @@ def analyze_preferred_advanced(ticker: str) -> dict:
     print(f"\n{'='*70}")
     print(f"  PREFERRED EQUITY ANALYSIS SWARM (Phase 3): Analyzing {ticker}")
     print(f"{'='*70}")
-    print(f"  Layer 1: Market Data | Rate Context | Dividend | Prospectus")
-    print(f"  Layer 2: Interest Rate Sensitivity")
-    print(f"  Layer 3: Call Probability | Tax & Yield | Regulatory | Relative Value")
+    print(f"  Layer 1: Prospectus | Rate Context")
+    print(f"  Layer 2: Market Data | Dividend")
+    print(f"  Layer 3: Interest Rate Sensitivity")
+    print(f"  Layer 4: Call Probability | Tax & Yield | Regulatory | Relative Value")
     print(f"  Quality Gate: Enabled")
     print(f"  Conditional Routing: Synthesis or Error Report")
     print(f"{'='*70}\n")

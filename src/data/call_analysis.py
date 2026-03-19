@@ -21,7 +21,6 @@ issued as depositary shares.
 
 from datetime import date, datetime
 from typing import Any, Dict, List, Optional
-import math
 
 
 def analyze_call_probability(

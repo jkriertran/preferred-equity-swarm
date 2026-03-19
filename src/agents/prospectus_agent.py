@@ -25,6 +25,7 @@ from dateutil import parser as date_parser
 #   python3 src/agents/prospectus_agent.py JPM-PD
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
+from src.data.prospectus_inventory import load_cached_terms_for_ticker
 from src.utils.config import get_llm
 
 
@@ -246,44 +247,62 @@ def prospectus_agent_node(state: dict) -> dict:
     if prospectus_text:
         terms = extract_terms_from_text(prospectus_text, ticker=ticker, filing_metadata=filing or None)
     else:
-        from src.data.edgar_pipeline import EdgarPipeline, resolve_preferred_filing
-
-        pipeline = EdgarPipeline()
-
-        if filing:
-            resolution = {
-                "requested_ticker": ticker,
-                "requested_series": filing.get("expected_series", ""),
-                "source": "provided",
-                "selected_filing": filing,
-                "accession_number": filing.get("accession_number", ""),
-                "filing_date": filing.get("filing_date", ""),
-                "filing_url": filing.get("url", ""),
-                "matched_series": filing.get("expected_series") or filing.get("series", ""),
-                "series_match": True,
-                "validation_tokens": [],
-                "mismatch_warning": None,
-            }
-            selected_filing = filing
-        else:
-            filings, resolution = resolve_preferred_filing(ticker, pipeline=pipeline)
-            selected_filing = resolution.get("selected_filing", {}) if resolution else {}
-            if not selected_filing and filings:
-                selected_filing = filings[0]
-
-        if not selected_filing:
-            terms = {
-                "error": f"No prospectus found for {ticker} on EDGAR",
-                "ticker": ticker,
-                "confidence_score": 0.0,
-            }
-        else:
-            terms = extract_terms(
-                selected_filing,
-                pipeline=pipeline,
-                requested_ticker=ticker,
-                resolution=resolution,
+        cached_terms = load_structured_terms_cache(ticker, filing or None)
+        if cached_terms:
+            terms = _apply_resolution_metadata(
+                cached_terms,
+                ticker=ticker,
+                filing_metadata=filing or None,
+                resolution={
+                    "requested_ticker": ticker,
+                    "requested_series": _expected_series_for_ticker(ticker),
+                    "source": cached_terms.get("resolution_source", "cache"),
+                    "matched_series": cached_terms.get("matched_series") or cached_terms.get("series"),
+                    "series_match": cached_terms.get("validation", {}).get("series_match", True),
+                    "validation_tokens": cached_terms.get("validation", {}).get("validation_tokens", []),
+                    "mismatch_warning": cached_terms.get("mismatch_warning"),
+                },
+                source_override="cache",
             )
+        else:
+            from src.data.edgar_pipeline import EdgarPipeline, resolve_preferred_filing
+
+            pipeline = EdgarPipeline()
+
+            if filing:
+                resolution = {
+                    "requested_ticker": ticker,
+                    "requested_series": filing.get("expected_series", ""),
+                    "source": "provided",
+                    "selected_filing": filing,
+                    "accession_number": filing.get("accession_number", ""),
+                    "filing_date": filing.get("filing_date", ""),
+                    "filing_url": filing.get("url", ""),
+                    "matched_series": filing.get("expected_series") or filing.get("series", ""),
+                    "series_match": True,
+                    "validation_tokens": [],
+                    "mismatch_warning": None,
+                }
+                selected_filing = filing
+            else:
+                filings, resolution = resolve_preferred_filing(ticker, pipeline=pipeline)
+                selected_filing = resolution.get("selected_filing", {}) if resolution else {}
+                if not selected_filing and filings:
+                    selected_filing = filings[0]
+
+            if not selected_filing:
+                terms = {
+                    "error": f"No prospectus found for {ticker} on EDGAR",
+                    "ticker": ticker,
+                    "confidence_score": 0.0,
+                }
+            else:
+                terms = extract_terms(
+                    selected_filing,
+                    pipeline=pipeline,
+                    requested_ticker=ticker,
+                    resolution=resolution,
+                )
 
     mismatch_message = _series_mismatch_message(terms)
     if mismatch_message and not terms.get("error"):
@@ -310,6 +329,15 @@ def load_structured_terms_cache(
     """Load the committed demo cache or a generated runtime cache."""
     ticker = _normalize_ticker(ticker)
     accession = _normalize_accession((filing or {}).get("accession_number", ""))
+
+    if ticker:
+        cached_by_ticker = load_cached_terms_for_ticker(ticker)
+        if isinstance(cached_by_ticker, dict) and _cache_entry_matches(
+            cached_by_ticker,
+            ticker=ticker,
+            accession=accession,
+        ):
+            return cached_by_ticker
 
     candidate_paths: List[str] = []
     if ticker:

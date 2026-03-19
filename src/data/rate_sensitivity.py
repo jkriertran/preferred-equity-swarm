@@ -79,7 +79,7 @@ def analyze_interest_rate_sensitivity(
         "live_benchmark_label": benchmark_context.get("live_benchmark_label"),
         "benchmark_replacement_method": benchmark_context.get("benchmark_replacement_method"),
         "benchmark_rate_pct": benchmark_context.get("benchmark_rate_pct"),
-        "floating_spread_bps": _to_float(prospectus_terms.get("floating_spread")),
+        "floating_spread_bps": _floating_spread_bps_from_terms(prospectus_terms),
         "all_in_floating_coupon_pct": None,
         "projected_post_reset_coupon_pct": None,
         "is_benchmark_replacement_estimate": benchmark_context.get(
@@ -128,6 +128,14 @@ def analyze_interest_rate_sensitivity(
         )
     analysis["summary"] = _build_summary(analysis)
     return analysis
+
+
+def _floating_spread_bps_from_terms(prospectus_terms: Dict[str, Any]) -> Optional[float]:
+    """Return floating spread in basis points across mixed prospectus schemas."""
+    spread = prospectus_terms.get("floating_spread")
+    if spread is None:
+        spread = prospectus_terms.get("floating_spread_bps")
+    return _to_float(spread)
 
 
 def _analyze_fixed_security(

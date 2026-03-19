@@ -8,7 +8,7 @@ tickers to verified security metadata.
 Resolution Strategy (three layers):
     Layer 1: Curated reference database (preferred_universe.json)
     Layer 2: PFF ETF holdings cross-reference (auto-detects redemptions)
-    Layer 3: Yahoo Finance live lookup (fallback for unknown tickers)
+    Layer 3: Live provider lookup (fallback for unknown tickers)
 
 Usage:
     from src.data.security_resolver import resolve_security, get_known_tickers
@@ -21,11 +21,14 @@ Usage:
 """
 
 import json
-import os
 import re
 import logging
 from pathlib import Path
 from typing import Optional
+
+from src.data.alpha_vantage import get_quote as get_alpha_vantage_quote
+from src.data.alpha_vantage import is_preferred_reference, lookup_reference_symbol
+from src.data.prospectus_inventory import load_cached_terms_for_ticker
 
 logger = logging.getLogger(__name__)
 
@@ -83,20 +86,31 @@ def _load_snapshots() -> dict:
 # ---------------------------------------------------------------------------
 # Ticker normalization
 # ---------------------------------------------------------------------------
+_CANONICAL_TICKER_RE = re.compile(r"^[A-Z]+-P[A-Z]$")
 _TICKER_PATTERNS = [
     # "C-PN" -> already correct
-    (r"^([A-Z]+)-P([A-Z])$", lambda m: f"{m.group(1)}-P{m.group(2)}"),
-    # "C.PR.N" or "C/PR/N" -> "C-PN"
-    (r"^([A-Z]+)[./]PR[./]([A-Z])$", lambda m: f"{m.group(1)}-P{m.group(2)}"),
+    re.compile(r"^([A-Z]+)-P([A-Z])$", re.IGNORECASE),
+    # "ADC-P-A" -> "ADC-PA"
+    re.compile(r"^([A-Z]+)-P-([A-Z])$", re.IGNORECASE),
+    # "C.PR.N" or "C/PR/N" or "C.PRN" -> "C-PN"
+    re.compile(r"^([A-Z]+)[./]PR[./]?([A-Z])$", re.IGNORECASE),
+    # "C.PN" or "C/P/N" -> "C-PN"
+    re.compile(r"^([A-Z]+)[./]P[./]?([A-Z])$", re.IGNORECASE),
     # "C PRN" or "C PR N" -> "C-PN"
-    (r"^([A-Z]+)\s+PR\s*([A-Z])$", lambda m: f"{m.group(1)}-P{m.group(2)}"),
-    # "CpN" or "C.pN" -> "C-PN"
-    (r"^([A-Z]+)[.p]([A-Z])$", lambda m: f"{m.group(1)}-P{m.group(2)}"),
+    re.compile(r"^([A-Z]+)\s+PR\s*([A-Z])$", re.IGNORECASE),
+    # "ADC P A" or "ADC P-A" -> "ADC-PA"
+    re.compile(r"^([A-Z]+)\s+P[\s-]*([A-Z])$", re.IGNORECASE),
     # "BAC+PL" -> "BAC-PL"
-    (r"^([A-Z]+)\+P([A-Z])$", lambda m: f"{m.group(1)}-P{m.group(2)}"),
-    # "BAC PL" -> "BAC-PL"
-    (r"^([A-Z]+)\s+P([A-Z])$", lambda m: f"{m.group(1)}-P{m.group(2)}"),
+    re.compile(r"^([A-Z]+)\+P([A-Z])$", re.IGNORECASE),
+    # "BAC PL" or "BAC P L" -> "BAC-PL"
+    re.compile(r"^([A-Z]+)\s+P\s*([A-Z])$", re.IGNORECASE),
 ]
+_INLINE_LOWER_P_PATTERN = re.compile(r"^([A-Za-z]+)p([A-Za-z])$")
+
+
+def _format_canonical_ticker(base: str, series: str) -> str:
+    """Format a preferred ticker in canonical ISSUER-PX form."""
+    return f"{base.upper()}-P{series.upper()}"
 
 
 def normalize_ticker(raw_ticker: str) -> str:
@@ -105,6 +119,7 @@ def normalize_ticker(raw_ticker: str) -> str:
 
     Handles common variations:
         C-PN, C.PR.N, C PRN, CpN, C/PR/N -> C-PN
+        ADC-P-A, ADC P A -> ADC-PA
         BAC-PL, BAC+PL, BAC PL -> BAC-PL
 
     Parameters
@@ -118,17 +133,26 @@ def normalize_ticker(raw_ticker: str) -> str:
         The normalized ticker in PARENT-PX format, or the original
         string uppercased if no pattern matches.
     """
-    cleaned = raw_ticker.strip().upper()
+    raw = raw_ticker.strip()
+    if not raw:
+        return ""
+
+    cleaned = re.sub(r"\s+", " ", raw.upper())
 
     # Already in canonical format?
-    if re.match(r"^[A-Z]+-P[A-Z]$", cleaned):
+    if _CANONICAL_TICKER_RE.match(cleaned):
         return cleaned
 
     # Try each pattern
-    for pattern, formatter in _TICKER_PATTERNS:
-        match = re.match(pattern, cleaned)
+    for pattern in _TICKER_PATTERNS:
+        match = pattern.match(cleaned)
         if match:
-            return formatter(match)
+            return _format_canonical_ticker(match.group(1), match.group(2))
+
+    # Preserve the lowercase inline "p" shorthand (e.g. "CpN")
+    inline_match = _INLINE_LOWER_P_PATTERN.match(raw)
+    if inline_match:
+        return _format_canonical_ticker(inline_match.group(1), inline_match.group(2))
 
     # No match; return uppercased original
     return cleaned
@@ -144,7 +168,7 @@ def resolve_security(raw_ticker: str) -> dict:
     Resolution layers:
         1. Check the curated preferred_universe.json database
         2. Check if a demo prospectus cache file exists
-        3. Attempt a live Yahoo Finance lookup as a fallback
+        3. Attempt a live Alpha Vantage lookup as a fallback
         4. Return a minimal "unresolved" record if all layers fail
 
     Parameters
@@ -158,7 +182,7 @@ def resolve_security(raw_ticker: str) -> dict:
         A dictionary containing at minimum:
             - ticker: str (canonical format)
             - resolved: bool (True if found in a trusted source)
-            - resolution_source: str ("universe", "demo_cache", "yahoo_live", "unresolved")
+            - resolution_source: str ("universe", "demo_cache", "alpha_vantage_live", "unresolved")
             - security_name: str or None
             - issuer: str or None
             - parent_ticker: str or None
@@ -166,6 +190,7 @@ def resolve_security(raw_ticker: str) -> dict:
             - in_pff: bool
             - has_prospectus_cache: bool
             - warnings: list[str]
+            - trusted_for_analysis: bool
     """
     ticker = normalize_ticker(raw_ticker)
     warnings = []
@@ -189,6 +214,7 @@ def resolve_security(raw_ticker: str) -> dict:
             "par_value": entry.get("par_value"),
             "last_known_price": entry.get("last_known_price"),
             "warnings": warnings,
+            "trusted_for_analysis": True,
         }
 
         # Validate status
@@ -221,14 +247,16 @@ def resolve_security(raw_ticker: str) -> dict:
             "par_value": terms.get("par_value"),
             "last_known_price": None,
             "warnings": warnings,
+            "trusted_for_analysis": True,
         }
 
-    # Layer 3: Live Yahoo Finance lookup
-    yahoo_result = _try_yahoo_lookup(ticker)
-    if yahoo_result:
+    # Layer 3: Live provider lookup
+    live_result = _try_live_lookup(ticker)
+    if live_result:
         # Validate: is this actually a preferred stock?
-        name = (yahoo_result.get("longName") or "").upper()
-        price = yahoo_result.get("price", 0)
+        name = (live_result.get("longName") or "").upper()
+        price = live_result.get("price", 0)
+        instrument_type = str(live_result.get("instrument_type", "")).upper()
 
         is_preferred = any(
             kw in name
@@ -237,14 +265,14 @@ def resolve_security(raw_ticker: str) -> dict:
                 "TRUST", "CAPITAL", "NON-CUMULATIVE", "NONCUMULATIVE",
                 "CUMULATIVE", "PERPETUAL", "TR PREF",
             ]
-        )
+        ) or "PREFERRED" in instrument_type
 
         # Price sanity check: depositary preferred shares typically trade $5-$60
         price_reasonable = 5.0 <= price <= 60.0 if price else False
 
         if not is_preferred:
             warnings.append(
-                f"Yahoo Finance name '{yahoo_result.get('longName')}' does not "
+                f"Live lookup name '{live_result.get('longName')}' does not "
                 "appear to be a preferred stock. This may be the common stock "
                 "or a different security class."
             )
@@ -256,11 +284,13 @@ def resolve_security(raw_ticker: str) -> dict:
                 "different security class."
             )
 
+        trusted_for_analysis = is_preferred
+
         return {
             "ticker": ticker,
             "resolved": True,
-            "resolution_source": "yahoo_live",
-            "security_name": yahoo_result.get("longName"),
+            "resolution_source": live_result.get("resolution_source", "live_lookup"),
+            "security_name": live_result.get("longName"),
             "issuer": None,
             "parent_ticker": ticker.split("-")[0] if "-" in ticker else ticker,
             "status": "active" if price_reasonable else "unknown",
@@ -271,12 +301,13 @@ def resolve_security(raw_ticker: str) -> dict:
             "par_value": None,
             "last_known_price": round(price, 2) if price else None,
             "warnings": warnings,
+            "trusted_for_analysis": trusted_for_analysis,
         }
 
     # Layer 4: Unresolved
     warnings.append(
         f"{ticker} could not be found in the curated universe, demo cache, "
-        "or Yahoo Finance. Please verify the ticker symbol."
+        "or the live market-data provider. Please verify the ticker symbol."
     )
     return {
         "ticker": ticker,
@@ -293,6 +324,7 @@ def resolve_security(raw_ticker: str) -> dict:
         "par_value": None,
         "last_known_price": None,
         "warnings": warnings,
+        "trusted_for_analysis": False,
     }
 
 
@@ -300,39 +332,38 @@ def resolve_security(raw_ticker: str) -> dict:
 # Helper: Demo cache
 # ---------------------------------------------------------------------------
 def _has_demo_cache(ticker: str) -> bool:
-    """Check if a demo prospectus cache file exists for this ticker."""
-    return (_DEMO_CACHE_DIR / f"{ticker}.json").exists()
+    """Check if any structured prospectus cache exists for this ticker."""
+    return bool(load_cached_terms_for_ticker(ticker))
 
 
 def _load_demo_cache(ticker: str) -> dict:
-    """Load the demo prospectus cache file for a ticker."""
-    path = _DEMO_CACHE_DIR / f"{ticker}.json"
-    if path.exists():
-        with open(path) as f:
-            return json.load(f)
-    return {}
+    """Load the best available structured prospectus cache for a ticker."""
+    return load_cached_terms_for_ticker(ticker)
 
 
 # ---------------------------------------------------------------------------
-# Helper: Yahoo Finance live lookup
+# Helper: live lookup
 # ---------------------------------------------------------------------------
-def _try_yahoo_lookup(ticker: str) -> Optional[dict]:
-    """Attempt a live Yahoo Finance lookup for a ticker."""
+def _try_live_lookup(ticker: str) -> Optional[dict]:
+    """Attempt a live Alpha Vantage lookup for a ticker."""
     try:
-        import yfinance as yf
-        tk = yf.Ticker(ticker)
-        info = tk.info or {}
-        price = info.get("regularMarketPrice") or info.get("previousClose")
-        name = info.get("longName") or info.get("shortName")
-        if price and price > 0:
-            return {
-                "longName": name,
-                "price": price,
-                "exchange": info.get("exchange", ""),
-            }
-    except Exception as e:
-        logger.debug("Yahoo Finance lookup failed for %s: %s", ticker, e)
+        reference = lookup_reference_symbol(ticker, require_preferred=False)
+        quote = get_alpha_vantage_quote(ticker, require_preferred=False)
+        if not quote:
+            return None
 
+        price = quote.get("close") or quote.get("price")
+        if price:
+            return {
+                "longName": quote.get("name"),
+                "price": float(price),
+                "exchange": (reference or {}).get("region", ""),
+                "instrument_type": (reference or {}).get("type", ""),
+                "resolution_source": "alpha_vantage_live",
+                "is_preferred_reference": is_preferred_reference(reference),
+            }
+    except Exception as exc:
+        logger.debug("Alpha Vantage lookup failed for %s: %s", ticker, exc)
     return None
 
 
@@ -501,6 +532,16 @@ def validate_ticker_for_analysis(raw_ticker: str) -> dict:
             "ticker": ticker,
             "reason": f"Could not find {ticker} in any data source. "
                       "Please check the ticker symbol.",
+            "resolution": resolution,
+        }
+
+    if not resolution.get("trusted_for_analysis", resolution["resolved"]):
+        return {
+            "valid": False,
+            "ticker": ticker,
+            "reason": " ".join(resolution["warnings"]) or (
+                f"{ticker} could not be confidently verified as a preferred stock."
+            ),
             "resolution": resolution,
         }
 

@@ -33,6 +33,8 @@ from typing import Any, Dict, List, Optional
 # for the demo universe; a production system would use SEC filings or a
 # reference data provider.
 KNOWN_C_CORPS = {
+    "albemarle",
+    "albemarle corporation",
     # Banks / Financial
     "bank of america",
     "citigroup",
@@ -116,7 +118,7 @@ TRUST_PREFERRED_KEYWORDS = [
     "capital xi ", "capital xii ", "capital xiii", "capital xiv ", "capital xv ",
     # General trust keywords
     "capital trust", "statutory trust",
-    "tr pref secs",  # yfinance shorthand (e.g., "SCE Trust VI 5% TR PREF SECS")
+    "tr pref secs",  # shorthand seen in provider security names (e.g., trust preferreds)
     "trust preferred",  # explicit label
 ]
 
@@ -188,7 +190,7 @@ def analyze_tax_and_yield(
 
     # --- QDI classification ---
     security_name = str(prospectus_terms.get("security_name", "")).strip()
-    # Also check the market data name (yfinance often includes "Trust" labels)
+    # Also check the market data name in case the provider includes trust labels
     market_name = str(market_data.get("name", "")).strip()
     combined_name = f"{security_name} {market_name}"
     issuer_type, qdi_eligible, qdi_reason = _classify_qdi(issuer, prospectus_qdi, combined_name)

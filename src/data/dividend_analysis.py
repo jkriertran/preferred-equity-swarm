@@ -4,14 +4,13 @@ Computes dividend consistency, growth patterns, and coverage metrics.
 """
 
 import pandas as pd
-import yfinance as yf
-from typing import Optional
 import os
 import sys
 
 # Ensure project root is on path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 from src.data.market_data import get_dividend_history
+from src.data.market_data import _derive_dividend_fields, _load_structured_terms
 
 
 def analyze_dividend_pattern(ticker: str) -> dict:
@@ -35,6 +34,25 @@ def analyze_dividend_pattern(ticker: str) -> dict:
         df = get_dividend_history(ticker)
         
         if df is None or df.empty or len(df) < 2:
+            terms = _load_structured_terms(ticker)
+            derived = _derive_dividend_fields(ticker, price=None)
+            frequency = terms.get("dividend_frequency") or "quarterly"
+            coupon_type = str(terms.get("coupon_type", "")).lower()
+
+            if derived.get("dividend_rate") is not None:
+                return {
+                    "ticker": ticker,
+                    "has_dividend_history": False,
+                    "frequency": frequency,
+                    "consistency": "unknown",
+                    "consistency_score": 0.0,
+                    "is_fixed_rate": coupon_type == "fixed",
+                    "trend": "insufficient_history",
+                    "trailing_annual_dividends": derived["dividend_rate"],
+                    "source": "prospectus_terms",
+                    "error": "Dividend history unavailable from provider; using prospectus terms for frequency/coupon context.",
+                }
+
             return {
                 "ticker": ticker,
                 "has_dividend_history": False,

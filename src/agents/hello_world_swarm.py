@@ -3,7 +3,7 @@ Hello World Preferred Equity Swarm
 ===================================
 A three-agent LangGraph system that demonstrates the core swarm pattern:
 
-1. Market Data Agent: Fetches preferred stock info from Yahoo Finance
+1. Market Data Agent: Fetches preferred stock info from Alpha Vantage
 2. Rate Context Agent: Fetches Treasury yield data for rate comparison
 3. Synthesis Agent: Combines both outputs into a preliminary analysis
 
@@ -13,7 +13,7 @@ end-to-end before building the full eight-agent swarm.
 
 import os
 import json
-from typing import TypedDict, Annotated
+from typing import TypedDict
 from langgraph.graph import StateGraph, END
 from langchain_core.messages import HumanMessage, SystemMessage
 
@@ -37,7 +37,7 @@ class SwarmState(TypedDict):
 
 def market_data_agent(state: SwarmState) -> dict:
     """
-    Agent 1: Fetches market data for the preferred stock from Yahoo Finance.
+    Agent 1: Fetches market data for the preferred stock from Alpha Vantage.
     This is a 'tool agent' that executes a deterministic data fetch.
     """
     import sys
@@ -71,11 +71,11 @@ def rate_context_agent(state: SwarmState) -> dict:
     """
     import sys
     sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
-    from src.data.rate_data import get_treasury_yields_from_yfinance
+    from src.data.rate_data import get_treasury_yields
 
     print("[Rate Context Agent] Fetching Treasury yield data...")
 
-    yields = get_treasury_yields_from_yfinance()
+    yields = get_treasury_yields()
 
     print(f"[Rate Context Agent] Done. Got {len(yields)} yield curve points.")
     return {"rate_data": yields}

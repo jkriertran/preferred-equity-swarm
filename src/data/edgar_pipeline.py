@@ -72,6 +72,7 @@ CACHE_DIR = os.path.join(DATA_DIR, "edgar_cache")
 DEMO_FILING_REGISTRY_PATH = os.path.join(DATA_DIR, "preferred_filing_registry.json")
 
 TICKER_TO_ISSUER_NAME = {
+    "ALB": "Albemarle",
     "JPM": "JPMorgan Chase",
     "BAC": "Bank of America",
     "GS": "Goldman Sachs",

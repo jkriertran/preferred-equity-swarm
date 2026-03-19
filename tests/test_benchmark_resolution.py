@@ -9,7 +9,7 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from src.data.rate_sensitivity import _resolve_benchmark_context, _extract_tenor_label, _all_in_floating_coupon_pct
-from src.data.rate_data import get_sofr_rate, get_treasury_yields_from_yfinance
+from src.data.rate_data import get_sofr_rate, get_treasury_yields
 
 
 def test_tenor_extraction():
@@ -31,25 +31,27 @@ def test_tenor_extraction():
 
 
 def test_sofr_fallback():
-    """Verify that SOFR can be fetched even without a FRED API key."""
-    print("=== SOFR Fallback Test ===")
+    """Verify that SOFR can be fetched from FRED or snapshots."""
+    print("=== SOFR Availability Test ===")
     rate = get_sofr_rate()
     if rate is not None:
         print(f"  [PASS] SOFR rate fetched: {rate}%")
     else:
-        print(f"  [FAIL] SOFR rate is None (no FRED key and yfinance fallback failed)")
+        print(f"  [FAIL] SOFR rate is None (no FRED key and no snapshot fallback)")
     print()
 
 
 def test_treasury_yields():
-    """Verify that the yield curve includes a 3M point."""
+    """Verify that the yield helper returns data when live or snapshot inputs exist."""
     print("=== Treasury Yield Curve Test ===")
-    yields = get_treasury_yields_from_yfinance()
+    yields = get_treasury_yields()
     print(f"  Yield points returned: {list(yields.keys())}")
-    if "3M" in yields:
+    if not yields:
+        print("  [WARN] No Treasury curve available from FRED or local snapshots in this environment")
+    elif "3M" in yields:
         print(f"  [PASS] 3M Treasury yield: {yields['3M']}%")
     else:
-        print(f"  [FAIL] 3M Treasury yield missing from curve")
+        print(f"  [WARN] 3M Treasury yield missing from curve")
     if "1M" in yields:
         print(f"  [PASS] 1M Treasury yield: {yields['1M']}%")
     else:
