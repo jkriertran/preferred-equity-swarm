@@ -55,7 +55,11 @@ HEADERS = {
 }
 
 # SEC rate limit: 10 requests per second. We stay well under that.
-REQUEST_DELAY = 0.2
+REQUEST_DELAY = 0.35
+REQUEST_RETRIES = 3
+RESOLVED_CACHE_TTL_SECONDS = 30 * 24 * 60 * 60
+UNRESOLVED_CACHE_TTL_SECONDS = 30 * 60
+FAILED_DOWNLOAD_TTL_SECONDS = 15 * 60
 
 # Base URLs
 SUBMISSIONS_BASE = "https://data.sec.gov/submissions"
@@ -104,8 +108,59 @@ class EdgarPipeline:
         self.session = requests.Session()
         self.session.headers.update(HEADERS)
         self.cache_enabled = cache_enabled
+        self._last_request_at = 0.0
         if cache_enabled:
             os.makedirs(CACHE_DIR, exist_ok=True)
+
+    def _wait_for_request_slot(self) -> None:
+        """Throttle outbound SEC requests so bursts stay well below the limit."""
+        now = time.monotonic()
+        elapsed = now - self._last_request_at
+        if elapsed < REQUEST_DELAY:
+            time.sleep(REQUEST_DELAY - elapsed)
+        self._last_request_at = time.monotonic()
+
+    def _request(
+        self,
+        url: str,
+        *,
+        params: Optional[Dict[str, Any]] = None,
+        timeout: int = 20,
+        retries: int = REQUEST_RETRIES,
+        context: str = "Request",
+    ) -> Optional[requests.Response]:
+        """Issue a throttled SEC request with retry/backoff for transient failures."""
+        last_error = ""
+
+        for attempt in range(retries):
+            self._wait_for_request_slot()
+            try:
+                resp = self.session.get(url, params=params, timeout=timeout)
+                if resp.status_code == 503:
+                    last_error = "503 rate limited"
+                    print(f"  [EDGAR] {context} hit 503, retrying ({attempt + 1}/{retries})...")
+                    retry_after = resp.headers.get("Retry-After")
+                    try:
+                        backoff = float(retry_after) if retry_after else 0.0
+                    except (TypeError, ValueError):
+                        backoff = 0.0
+                    time.sleep(max(backoff, 1.5 * (attempt + 1)))
+                    continue
+                resp.raise_for_status()
+                return resp
+            except requests.exceptions.Timeout:
+                last_error = "timeout"
+                print(f"  [EDGAR] {context} timed out, retrying ({attempt + 1}/{retries})...")
+                time.sleep(1.5 * (attempt + 1))
+            except Exception as exc:
+                last_error = str(exc)
+                if attempt + 1 < retries:
+                    print(f"  [EDGAR] {context} error, retrying ({attempt + 1}/{retries})...")
+                    time.sleep(1.0 * (attempt + 1))
+                else:
+                    print(f"  [EDGAR] {context} failed: {exc}")
+
+        return None
 
     # ==================================================================
     # PRIMARY: Full-Text Search for Preferred Prospectuses
@@ -156,12 +211,13 @@ class EdgarPipeline:
             "size": str(min(max_results, 100)),
         }
 
-        time.sleep(REQUEST_DELAY)
-        try:
-            resp = self.session.get(EFTS_SEARCH_URL, params=params, timeout=20)
-            resp.raise_for_status()
-        except Exception as e:
-            print(f"  [EDGAR] Full-text search failed: {e}")
+        resp = self._request(
+            EFTS_SEARCH_URL,
+            params=params,
+            timeout=20,
+            context="Full-text search",
+        )
+        if resp is None:
             return []
 
         data = resp.json()
@@ -235,16 +291,23 @@ class EdgarPipeline:
                 tickers_data = json.load(f)
         else:
             url = "https://www.sec.gov/files/company_tickers.json"
-            time.sleep(REQUEST_DELAY)
-            try:
-                resp = self.session.get(url, timeout=15)
-                resp.raise_for_status()
+            resp = self._request(
+                url,
+                timeout=15,
+                context="company_tickers.json fetch",
+            )
+            if resp is not None:
                 tickers_data = resp.json()
-            except Exception:
+            else:
                 # Fallback: try data.sec.gov
                 url = "https://data.sec.gov/submissions/company_tickers.json"
-                resp = self.session.get(url, timeout=15)
-                resp.raise_for_status()
+                resp = self._request(
+                    url,
+                    timeout=15,
+                    context="company_tickers fallback fetch",
+                )
+                if resp is None:
+                    return None
                 tickers_data = resp.json()
 
             if self.cache_enabled:
@@ -291,9 +354,13 @@ class EdgarPipeline:
             with open(cache_path, "r") as f:
                 submissions = json.load(f)
         else:
-            time.sleep(REQUEST_DELAY)
-            resp = self.session.get(url, timeout=15)
-            resp.raise_for_status()
+            resp = self._request(
+                url,
+                timeout=15,
+                context=f"submissions fetch for {ticker}",
+            )
+            if resp is None:
+                return []
             submissions = resp.json()
             if self.cache_enabled:
                 with open(cache_path, "w") as f:
@@ -381,6 +448,7 @@ class EdgarPipeline:
         """
         accession = filing.get("accession_number", "").replace("-", "")
         cache_path = os.path.join(CACHE_DIR, f"filing_{accession}.txt")
+        failure_cache_path = os.path.join(CACHE_DIR, f"filing_{accession}.failed.json")
 
         # Check cache
         if self.cache_enabled and os.path.exists(cache_path):
@@ -388,18 +456,29 @@ class EdgarPipeline:
                 text = f.read()
             return text[:max_chars]
 
+        if self.cache_enabled and os.path.exists(failure_cache_path):
+            failure_meta = _load_json_file(failure_cache_path)
+            failed_at = float((failure_meta or {}).get("failed_at", 0.0) or 0.0)
+            if failed_at and (time.time() - failed_at) < FAILED_DOWNLOAD_TTL_SECONDS:
+                print(f"  [EDGAR] Skipping download for {accession}; recent failure cooldown is still active.")
+                return ""
+
         url = filing["url"]
+        last_error = ""
 
         for attempt in range(retries):
-            time.sleep(REQUEST_DELAY * (attempt + 1))  # Exponential backoff
-            try:
-                resp = self.session.get(url, timeout=30)
-                if resp.status_code == 503:
-                    print(f"  [EDGAR] 503 rate limited, retrying ({attempt + 1}/{retries})...")
-                    time.sleep(2 * (attempt + 1))
-                    continue
-                resp.raise_for_status()
+            resp = self._request(
+                url,
+                timeout=30,
+                retries=1,
+                context=f"filing download {accession}",
+            )
+            if resp is None:
+                last_error = "request failed"
+                time.sleep(1.5 * (attempt + 1))
+                continue
 
+            try:
                 content_type = resp.headers.get("Content-Type", "")
                 raw = resp.text
 
@@ -417,14 +496,26 @@ class EdgarPipeline:
                 if self.cache_enabled:
                     with open(cache_path, "w", encoding="utf-8") as f:
                         f.write(text)
+                    if os.path.exists(failure_cache_path):
+                        os.remove(failure_cache_path)
 
                 return text[:max_chars]
 
-            except requests.exceptions.Timeout:
-                print(f"  [EDGAR] Timeout downloading {url}, retrying ({attempt + 1}/{retries})...")
             except Exception as e:
+                last_error = str(e)
                 print(f"  [EDGAR] Error downloading {url}: {e}")
-                break
+                time.sleep(1.0 * (attempt + 1))
+
+        if self.cache_enabled:
+            _save_json_file(
+                failure_cache_path,
+                {
+                    "accession_number": accession,
+                    "url": url,
+                    "failed_at": time.time(),
+                    "error": last_error or "download failed",
+                },
+            )
 
         return ""
 
@@ -537,6 +628,58 @@ class EdgarPipeline:
 # Registry + convenience functions
 # ---------------------------------------------------------------------------
 
+def _load_json_file(path: str) -> Any:
+    """Safely load JSON from disk."""
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except (OSError, json.JSONDecodeError):
+        return None
+
+
+def _save_json_file(path: str, payload: Any) -> None:
+    """Persist JSON to disk, creating parent directories when needed."""
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(payload, f, indent=2)
+
+
+def _resolution_cache_path(ticker: str) -> str:
+    """Return the on-disk cache path for filing-resolution results."""
+    safe_ticker = _normalize_preferred_ticker(ticker).replace("/", "_")
+    return os.path.join(CACHE_DIR, f"resolution_{safe_ticker}.json")
+
+
+def _load_resolution_cache(ticker: str) -> Optional[Dict[str, Any]]:
+    """Load a recent filing-resolution cache entry for a ticker."""
+    cached = _load_json_file(_resolution_cache_path(ticker))
+    if not isinstance(cached, dict):
+        return None
+
+    cached_at = float(cached.get("cached_at", 0.0) or 0.0)
+    status = str(cached.get("status", "")).lower()
+    ttl = RESOLVED_CACHE_TTL_SECONDS if status == "resolved" else UNRESOLVED_CACHE_TTL_SECONDS
+    if not cached_at or (time.time() - cached_at) > ttl:
+        return None
+    return cached
+
+
+def _save_resolution_cache(
+    ticker: str,
+    filings: List[Dict[str, Any]],
+    resolution: Dict[str, Any],
+) -> None:
+    """Persist filing-resolution results for later reruns."""
+    payload = {
+        "requested_ticker": _normalize_preferred_ticker(ticker),
+        "cached_at": time.time(),
+        "status": "resolved" if resolution.get("selected_filing") else "unresolved",
+        "filings": filings,
+        "resolution": resolution,
+    }
+    _save_json_file(_resolution_cache_path(ticker), payload)
+
+
 def load_demo_filing_registry() -> Dict[str, Dict[str, Any]]:
     """Load the committed quick-pick registry for cache-first demo tickers."""
     if not os.path.exists(DEMO_FILING_REGISTRY_PATH):
@@ -595,6 +738,15 @@ def resolve_preferred_filing(
         print(f"  [EDGAR] Using demo filing registry for {requested_ticker}")
         return [filing], resolution
 
+    cached_resolution = _load_resolution_cache(requested_ticker)
+    if cached_resolution:
+        status = str(cached_resolution.get("status", "")).lower() or "resolved"
+        print(f"  [EDGAR] Using cached {status} filing resolution for {requested_ticker}")
+        return (
+            cached_resolution.get("filings", []) or [],
+            cached_resolution.get("resolution", {}) or {},
+        )
+
     issuer_name = TICKER_TO_ISSUER_NAME.get(parent_ticker, parent_ticker)
 
     filings = pipeline.search_preferred_prospectuses(
@@ -617,7 +769,7 @@ def resolve_preferred_filing(
         source = "submissions"
 
     if not filings:
-        return [], {
+        resolution = {
             "requested_ticker": requested_ticker,
             "requested_series": requested_series,
             "source": "none",
@@ -625,6 +777,8 @@ def resolve_preferred_filing(
             "series_match": False,
             "mismatch_warning": f"No prospectus candidates found for {requested_ticker}.",
         }
+        _save_resolution_cache(requested_ticker, [], resolution)
+        return [], resolution
 
     best_filing = _select_best_filing(filings, requested_ticker, requested_series, pipeline)
     resolution = _build_resolution_metadata(
@@ -633,6 +787,7 @@ def resolve_preferred_filing(
         selected_filing=best_filing,
         source=source,
     )
+    _save_resolution_cache(requested_ticker, filings, resolution)
     return filings, resolution
 
 

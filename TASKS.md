@@ -4,9 +4,8 @@ This file is the persistent project task tracker for the repo.
 
 ## Active
 
-- [ ] Add gentler app-level EDGAR throttling/caching for uncached tickers so repeated live prospectus lookups are less likely to hit SEC 503 rate limits.
 - [ ] Validate live Alpha Vantage symbol coverage for a broader sample of preferred tickers and add explicit `provider_symbols.alpha_vantage` overrides where Alpha symbology is inconsistent.
-- [ ] Decide whether to commit the Alpha Vantage + FRED provider pivot and supporting resolver/cache changes.
+- [ ] Validate the new EDGAR resolution cache behavior on a few uncached live tickers and seed committed registry entries where repeated SEC lookups are still too expensive.
 - [ ] If paying later becomes acceptable, evaluate an `EODHD + FRED` adapter design.
 
 ## Completed
@@ -33,3 +32,6 @@ This file is the persistent project task tracker for the repo.
 - [x] Refresh the Streamlit architecture/help text and remove low-risk dead imports after the Alpha Vantage pivot.
 - [x] Refresh the README so setup, provider architecture, ticker input guidance, and current swarm layers match the Alpha Vantage + FRED implementation.
 - [x] Refactor the Alpha/provider seam around a shared local security context and a single Alpha symbol-resolution flow without changing the public market-data or resolver interfaces.
+- [x] Commit and push the Alpha/provider seam refactor to GitHub.
+- [x] Add EDGAR request pacing, retry/backoff, resolution caching, and failed-download cooldown handling for uncached prospectus lookups.
+- [x] Add focused regression coverage for EDGAR cached resolution reuse and failed-download cooldown behavior.
