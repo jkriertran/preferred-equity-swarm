@@ -31,3 +31,4 @@ This file is the persistent project task tracker for the repo.
 - [x] Replace the mixed `twelve_data` / `yfinance` market-data stack with an Alpha Vantage-only adapter plus FRED-backed rates.
 - [x] Add Alpha Vantage quote/history/dividend/common-overview helpers and targeted regression coverage.
 - [x] Refresh the Streamlit architecture/help text and remove low-risk dead imports after the Alpha Vantage pivot.
+- [x] Refresh the README so setup, provider architecture, ticker input guidance, and current swarm layers match the Alpha Vantage + FRED implementation.
